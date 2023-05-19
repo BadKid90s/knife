@@ -8,14 +8,14 @@ import (
 func NewMiddleware() Middleware {
 	return Middleware{
 		ctx:                  &Context{},
-		registeredMiddleware: make(map[string]MiddlewareHandler),
+		registeredMiddleware: make(map[string]Handler),
 	}
 
 }
 
 type Middleware struct {
 	ctx                  *Context
-	registeredMiddleware map[string]MiddlewareHandler
+	registeredMiddleware map[string]Handler
 }
 
 func (m *Middleware) Handle(write http.ResponseWriter, request *http.Request) error {
@@ -29,7 +29,7 @@ func (m *Middleware) Handle(write http.ResponseWriter, request *http.Request) er
 	return nil
 }
 
-func (m *Middleware) register(id string, handler MiddlewareHandler) error {
+func (m *Middleware) Register(id string, handler Handler) error {
 	_, exist := m.registeredMiddleware[id]
 	if exist == false {
 		m.registeredMiddleware[id] = handler
