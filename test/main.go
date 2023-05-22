@@ -26,7 +26,7 @@ func main() {
 	}
 
 	middle := middleware.NewMiddleware()
-	err = middle.Register("logger", middleware.HandlerFunc(logger))
+	err = middle.RegisterHandlerFunc("logger", logger)
 	if err != nil {
 		log.Printf("register middleware err")
 	}

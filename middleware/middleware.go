@@ -29,13 +29,17 @@ func (m *Middleware) Handle(write http.ResponseWriter, request *http.Request) er
 	return nil
 }
 
-func (m *Middleware) Register(id string, handler Handler) error {
+func (m *Middleware) RegisterHandler(id string, handler Handler) error {
 	_, exist := m.registeredMiddleware[id]
 	if exist == false {
 		m.registeredMiddleware[id] = handler
 		return nil
 	}
 	return RepeatRegisterErr
+}
+
+func (m *Middleware) RegisterHandlerFunc(id string, handlerFunc HandlerFunc) error {
+	return m.RegisterHandler(id, handlerFunc)
 }
 
 // RepeatRegisterErr 中间件重复注册
