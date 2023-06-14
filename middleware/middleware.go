@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"log"
 	"net/http"
 )
 
@@ -28,15 +29,18 @@ type Middleware struct {
 	registeredHandler []Handler
 }
 
-// Handle 按照`middlewareKeys`中的顺序执行中间件
+// Handle 顺序执行中间件
 // write: 响应
 // request: 请求
 func (m *Middleware) Handle(write http.ResponseWriter, request *http.Request) error {
 
 	for _, handler := range m.registeredHandler {
-		err := handler.Handle(m.ctx, write, request)
+		next, err := handler.Handle(m.ctx, write, request)
 		if err != nil {
-			return err
+			log.Println(err)
+		}
+		if !next {
+			break
 		}
 	}
 	return nil

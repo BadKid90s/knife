@@ -16,9 +16,9 @@ type ReverseProxyMiddleware struct {
 	proxy *httputil.ReverseProxy
 }
 
-func (r *ReverseProxyMiddleware) Handle(_ *middleware.Context, writer http.ResponseWriter, request *http.Request) (err error) {
+func (r *ReverseProxyMiddleware) Handle(_ *middleware.Context, writer http.ResponseWriter, request *http.Request) (bool, error) {
 	r.proxy.ServeHTTP(writer, request)
-	return nil
+	return true, nil
 }
 
 func init() {

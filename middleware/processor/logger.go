@@ -11,7 +11,7 @@ type LoggerMiddleware struct {
 	logger *logrus.Logger
 }
 
-func (m LoggerMiddleware) Handle(_ *middleware.Context, _ http.ResponseWriter, request *http.Request) (err error) {
+func (m LoggerMiddleware) Handle(_ *middleware.Context, _ http.ResponseWriter, request *http.Request) (next bool, err error) {
 	start := time.Now()
 	defer func() {
 		if err != nil {
@@ -20,7 +20,7 @@ func (m LoggerMiddleware) Handle(_ *middleware.Context, _ http.ResponseWriter, r
 			m.logger.Infof("%s  %v  [%s] 耗时: %s\t   %s", time.Now().Format("2006-01-02 15:04:05.000"), request.RemoteAddr, request.Method, time.Now().Sub(start), request.URL)
 		}
 	}()
-	return nil
+	return true, nil
 }
 
 func init() {
