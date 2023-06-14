@@ -5,12 +5,15 @@ import (
 	"net/http"
 )
 
+// RegisteredMiddlewares 已经注册的中间件
+var RegisteredMiddlewares = newMiddleware()
+
 // NewMiddleware 中间件的构造函数
-func NewMiddleware() Middleware {
+func newMiddleware() Middleware {
 	return Middleware{
-		ctx:                  &Context{},
-		registeredMiddleware: make(map[string]Handler),
-		middlewareKeys:       make([]string, 0),
+		ctx:                          &Context{},
+		registeredHandlerConstructor: make(map[string]HandlerConstructor, 0),
+		registeredHandler:            make([]Handler, 0),
 	}
 
 }
@@ -19,10 +22,10 @@ func NewMiddleware() Middleware {
 type Middleware struct {
 	//上下文环境
 	ctx *Context
-	//注册的中间件
-	registeredMiddleware map[string]Handler
-	//有序的中间件key
-	middlewareKeys []string
+	//注册的中间件处理器构造函数
+	registeredHandlerConstructor map[string]HandlerConstructor
+	//有序的中间件
+	registeredHandler []Handler
 }
 
 // Handle 按照`middlewareKeys`中的顺序执行中间件
@@ -30,8 +33,8 @@ type Middleware struct {
 // request: 请求
 func (m *Middleware) Handle(write http.ResponseWriter, request *http.Request) error {
 
-	for _, value := range m.middlewareKeys {
-		err := m.registeredMiddleware[value].Handle(m.ctx, write, request)
+	for _, handler := range m.registeredHandler {
+		err := handler.Handle(m.ctx, write, request)
 		if err != nil {
 			return err
 		}
@@ -39,25 +42,33 @@ func (m *Middleware) Handle(write http.ResponseWriter, request *http.Request) er
 	return nil
 }
 
+// HandlerConstructor 中间件处理器构造函数
+type HandlerConstructor func(configMap map[string]any) (Handler, error)
+
+// HandlerConstructorFunc 中间件处理器构造函数
+type HandlerConstructorFunc func(configMap map[string]any) (HandlerFunc, error)
+
 // RegisterHandler 注册中间件(接口实现)
 // id: 中间件的key
 // handler: 中间件
-func (m *Middleware) RegisterHandler(id string, handler Handler) error {
-	_, exist := m.registeredMiddleware[id]
+func (m *Middleware) RegisterHandler(id string, handler HandlerConstructor) {
+	_, exist := m.registeredHandlerConstructor[id]
 	if exist == false {
-		m.registeredMiddleware[id] = handler
-		m.middlewareKeys = append(m.middlewareKeys, id)
+		m.registeredHandlerConstructor[id] = handler
+	}
+}
+
+func (m *Middleware) BuildHandler(id string, config map[string]any) error {
+	if constructor, exist := m.registeredHandlerConstructor[id]; exist {
+		handler, err := constructor(config)
+		if err != nil {
+			return err
+		}
+		m.registeredHandler = append(m.registeredHandler, handler)
 		return nil
 	}
-	return RepeatRegisterErr
+	return NotFoundRegisterErr
 }
 
-// RegisterHandlerFunc 注册中间件（方法实现）
-// id: 中间件的key
-// handler: 中间件
-func (m *Middleware) RegisterHandlerFunc(id string, handlerFunc HandlerFunc) error {
-	return m.RegisterHandler(id, handlerFunc)
-}
-
-// RepeatRegisterErr 中间件重复注册
-var RepeatRegisterErr = errors.New("middleware Repeat Register")
+// NotFoundRegisterErr 中间件没有找到
+var NotFoundRegisterErr = errors.New("middleware Repeat Register")
