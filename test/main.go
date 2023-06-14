@@ -6,31 +6,26 @@ import (
 	"gateway/middleware"
 	"gateway/network"
 	"log"
-	"net/http"
 )
-
-func logger(ctx *middleware.Context, writer http.ResponseWriter, request *http.Request) error {
-	log.Printf("path: %v", request.URL.Path)
-	_, err := writer.Write([]byte("hello word"))
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 func main() {
 
-	listener, err := network.NewListenTCP(":8080")
+	listener, err := network.NewListenTCP(":8090")
 	if err != nil {
-		log.Printf("app runing err")
+		log.Fatalf("app listen err")
 	}
 
-	middle := middleware.NewMiddleware()
-	err = middle.RegisterHandlerFunc("logger", logger)
+	middle := middleware.RegisteredMiddlewares
+	err = middle.BuildHandler("logger", make(map[string]any))
 	if err != nil {
-		log.Printf("register middleware err")
+		log.Printf("buildHandler err")
 	}
-
+	configMap := make(map[string]any)
+	configMap["target"] = "http://localhost:8080"
+	err = middle.BuildHandler("proxy", configMap)
+	if err != nil {
+		log.Printf("buildHandler err")
+	}
 	app := core.NewApp(listener, middle)
 	err = app.Start()
 	if err != nil {
