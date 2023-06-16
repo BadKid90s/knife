@@ -21,7 +21,7 @@ func main() {
 		log.Printf("buildHandler err")
 	}
 	configMap := make(map[string]any)
-	configMap["target"] = "http://localhost:8080"
+	configMap["target"] = "http://localhost:5173"
 	err = middle.BuildHandler("proxy", configMap)
 	if err != nil {
 		log.Printf("buildHandler err")
