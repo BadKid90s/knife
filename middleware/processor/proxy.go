@@ -28,8 +28,15 @@ type ReverseProxyMiddleware struct {
 	proxyConfig *ReverseProxyConfiguration
 }
 
-func (r *ReverseProxyMiddleware) Handle(_ *middleware.Context, writer http.ResponseWriter, request *http.Request) error {
-	proxy, err := r.buildProxy(request)
+func (r *ReverseProxyMiddleware) Handle(ctx *middleware.Context, writer http.ResponseWriter, request *http.Request) error {
+	targetURL, err := r.matchPredicates(request)
+	if targetURL == nil {
+		// 手动设置 HTTP 响应码为 404
+		writer.WriteHeader(http.StatusNotFound)
+		ctx.Next(writer, request)
+		return nil
+	}
+	proxy, err := r.buildProxy(targetURL)
 	if err != nil {
 		return err
 	}
@@ -37,19 +44,13 @@ func (r *ReverseProxyMiddleware) Handle(_ *middleware.Context, writer http.Respo
 	return nil
 }
 
-func (r *ReverseProxyMiddleware) buildProxy(request *http.Request) (*httputil.ReverseProxy, error) {
-	targetURL, err := r.matchPredicates(request)
-	if err != nil {
-		return nil, err
-	}
+func (r *ReverseProxyMiddleware) buildProxy(targetURL *url.URL) (*httputil.ReverseProxy, error) {
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
 	proxy.ErrorLog = util.NewHttpLogger()
 	return proxy, nil
 }
 
 func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.URL, error) {
-
-	targetPath := request.URL.Path
 
 	for _, proxyInfo := range r.proxyConfig.Proxy {
 
@@ -64,6 +65,16 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 			value := strings.TrimSpace(parts[1])
 
 			switch key {
+			case "Host":
+				if !host.Match(request.Method, value) {
+					mathResult = false
+					break
+				}
+			case "Method":
+				if !method.Match(request.Method, value) {
+					mathResult = false
+					break
+				}
 			case "Path":
 				if !path.Match(request.URL.Path, value) {
 					mathResult = false
@@ -73,13 +84,11 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 			}
 		}
 		if mathResult {
-			targetPath = proxyInfo.Uri
-			break
+			targetURL, err := url.Parse(proxyInfo.Uri)
+			return targetURL, err
 		}
 	}
-
-	targetURL, err := url.Parse(targetPath)
-	return targetURL, err
+	return nil, nil
 }
 
 type ProxyInfo struct {
