@@ -1,5 +1,19 @@
 proxy:
   - id: wry
-    uri: http://localhost:5173
+    uri: http://localhost:8080
     predicates:
-      - Path=/
+      # 匹配主机：
+      #       匹配所有：`Host=`,`Host=*`
+      #       单匹配：`Host=**.baidu.com`,`Host=**.alibaba.com`
+      #       多匹配：`Host=**.baidu.com,**.alibaba.com`
+#      - Host=*
+      # 匹配方法：
+      #       匹配所有：`Method=`,`Path=*`
+      #       单匹配：`Path=GET`,`Path=POST`
+      #       多匹配：`Path=GET,POST`
+#      - Method=GET,POST
+      # 匹配路径：
+      #       匹配所有：`Path=`,`Path=/`
+      #       单匹配：`Path=/a/**`,`Path=/**/*.js`
+      #       多匹配：`Path=/a/**,/b/**`
+      - Path=/hello/*,/favicon.ico,/goodbye/*
