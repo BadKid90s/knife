@@ -2,7 +2,9 @@ package processor
 
 import (
 	"fmt"
-	"gateway/matcher"
+	"gateway/matcher/host"
+	"gateway/matcher/method"
+	"gateway/matcher/path"
 	"gateway/middleware"
 	"gateway/util"
 	"net/http"
@@ -50,6 +52,9 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 	targetPath := request.URL.Path
 
 	for _, proxyInfo := range r.proxyConfig.Proxy {
+
+		mathResult := true
+
 		for _, predicate := range proxyInfo.Predicates {
 			parts := strings.Split(predicate, "=")
 			if len(parts) != 2 {
@@ -60,14 +65,19 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 
 			switch key {
 			case "Path":
-				if matcher.Path(request.URL.Path, value) {
-					targetPath = proxyInfo.Uri
-					goto ReturnProxy
+				if !path.Match(request.URL.Path, value) {
+					mathResult = false
+					break
 				}
+
 			}
 		}
+		if mathResult {
+			targetPath = proxyInfo.Uri
+			break
+		}
 	}
-ReturnProxy:
+
 	targetURL, err := url.Parse(targetPath)
 	return targetURL, err
 }
