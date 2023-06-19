@@ -22,7 +22,6 @@ func (m LoggerMiddleware) Handle(ctx *middleware.Context, write http.ResponseWri
 		}
 	}()
 	ctx.Next(write, request)
-	m.logger.Infof("%s  %v  [%s] 耗时: %s\t   %s", time.Now().Format("2006-01-02 15:04:05.000"), request.RemoteAddr, request.Method, time.Now().Sub(start), request.URL)
 	return nil
 }
 
