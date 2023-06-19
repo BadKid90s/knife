@@ -11,12 +11,14 @@ func Match(path, patterns string) bool {
 		return true
 	}
 	for _, pattern := range strings.Split(patterns, ",") {
-		return mathPath(path, pattern)
+		if mathPath(path, pattern) {
+			return true
+		}
 	}
 	return false
 }
 func mathPath(path, pattern string) bool {
-	match, err := osPath.Match(path, pattern)
+	match, err := osPath.Match(pattern, path)
 	if err != nil {
 		log.Printf("match path error path：%v, pattern: %v", path, pattern)
 	}
