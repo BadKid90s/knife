@@ -1,44 +1,97 @@
 package processor
 
 import (
+	"fmt"
+	"gateway/matcher"
 	"gateway/middleware"
 	"gateway/util"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 )
 
-type ReverseProxyConfiguration struct {
-	Target string `config:"target"`
+func newReverseProxyMiddleware(configMap map[string]any) (*ReverseProxyMiddleware, error) {
+	proxyConfig, err := parseConfig(configMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ReverseProxyMiddleware{
+		proxyConfig: proxyConfig,
+	}, err
 }
 
 type ReverseProxyMiddleware struct {
-	proxy *httputil.ReverseProxy
+	proxyConfig *ReverseProxyConfiguration
 }
 
 func (r *ReverseProxyMiddleware) Handle(_ *middleware.Context, writer http.ResponseWriter, request *http.Request) error {
-	r.proxy.ServeHTTP(writer, request)
+	proxy, err := r.buildProxy(request)
+	if err != nil {
+		return err
+	}
+	proxy.ServeHTTP(writer, request)
 	return nil
+}
+
+func (r *ReverseProxyMiddleware) buildProxy(request *http.Request) (*httputil.ReverseProxy, error) {
+	targetURL, err := r.matchPredicates(request)
+	if err != nil {
+		return nil, err
+	}
+	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	proxy.ErrorLog = util.NewHttpLogger()
+	return proxy, nil
+}
+
+func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.URL, error) {
+
+	targetPath := request.URL.Path
+
+	for _, proxyInfo := range r.proxyConfig.Proxy {
+		for _, predicate := range proxyInfo.Predicates {
+			parts := strings.Split(predicate, "=")
+			if len(parts) != 2 {
+				panic(fmt.Sprintf("invalid key-value pair: %s", predicate))
+			}
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+
+			switch key {
+			case "Path":
+				if matcher.Path(request.URL.Path, value) {
+					targetPath = proxyInfo.Uri
+					goto ReturnProxy
+				}
+			}
+		}
+	}
+ReturnProxy:
+	targetURL, err := url.Parse(targetPath)
+	return targetURL, err
+}
+
+type ProxyInfo struct {
+	Id         string   `config:"id"`
+	Uri        string   `config:"uri"`
+	Predicates []string `config:"predicates"`
+}
+type ReverseProxyConfiguration struct {
+	Proxy []ProxyInfo `config:"proxy"`
+}
+
+func parseConfig(configMap map[string]any) (*ReverseProxyConfiguration, error) {
+	//解析配置
+	config := &ReverseProxyConfiguration{
+		Proxy: make([]ProxyInfo, 0),
+	}
+	err := util.UnpackConfig(configMap, config)
+	return config, err
 }
 
 func init() {
 	middleware.RegisteredMiddlewares.RegisterHandler("proxy", func(configMap map[string]any) (middleware.Handler, error) {
-		//解析配置
-		config := &ReverseProxyConfiguration{}
-		err := util.UnpackConfig(configMap, config)
-		if err != nil {
-			return nil, err
-		}
-		//构造反向代理
-		targetURL, err := url.Parse(config.Target)
-		if err != nil {
-			return nil, err
-		}
-		proxy := httputil.NewSingleHostReverseProxy(targetURL)
-		proxy.ErrorLog = util.NewHttpLogger()
-		return &ReverseProxyMiddleware{
-			proxy: proxy,
-		}, err
+		return newReverseProxyMiddleware(configMap)
 	})
-
 }

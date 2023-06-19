@@ -1,0 +1,5 @@
+proxy:
+  - id: wry
+    uri: http://localhost:5173
+    predicates:
+      - Path=/
