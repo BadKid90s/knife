@@ -8,6 +8,9 @@ proxy:
       # 匹配指定日期时间之前发生的请求
       #       匹配所有：`Before=`
       - Before=2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
+      # 匹配指定datetime1之后和datetime2之前发生的请求，datetime1在前datetime2在后
+      #       匹配所有：`Between=`
+      - Between=2023-06-26T14:30:00.000+08:00[Asia/Shanghai],2023-06-26T18:30:00.000+08:00[Asia/Shanghai]
       # 匹配主机：
       #       匹配所有：`Host=`,`Host=*`
       #       单匹配：`Host=**.baidu.com`,`Host=**.alibaba.com`
