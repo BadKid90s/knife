@@ -5,12 +5,14 @@ import (
 	"gateway/matcher/host"
 	"gateway/matcher/method"
 	"gateway/matcher/path"
+	timeMatch "gateway/matcher/time"
 	"gateway/middleware"
 	"gateway/util"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"time"
 )
 
 func newReverseProxyMiddleware(configMap map[string]any) (*ReverseProxyMiddleware, error) {
@@ -65,6 +67,25 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 			value := strings.TrimSpace(parts[1])
 
 			switch key {
+			case "After":
+			case "Before":
+				// 获取请求时间
+				requestTime := request.Header.Get("Date")
+				// 解析请求时间字符串
+				parsedTime, _ := time.Parse(time.RFC1123, requestTime)
+
+				switch key {
+				case "After":
+					if !timeMatch.After(parsedTime, value) {
+						mathResult = false
+						break
+					}
+				case "Before":
+					if !timeMatch.Before(parsedTime, value) {
+						mathResult = false
+						break
+					}
+				}
 			case "Host":
 				if !host.Match(request.Method, value) {
 					mathResult = false
