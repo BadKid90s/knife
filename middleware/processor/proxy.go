@@ -69,6 +69,7 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 			switch key {
 			case "After":
 			case "Before":
+			case "Between":
 				// 获取请求时间
 				requestTime := request.Header.Get("Date")
 				// 解析请求时间字符串
@@ -82,6 +83,11 @@ func (r *ReverseProxyMiddleware) matchPredicates(request *http.Request) (*url.UR
 					}
 				case "Before":
 					if !timeMatch.Before(parsedTime, value) {
+						mathResult = false
+						break
+					}
+				case "Between":
+					if !timeMatch.Between(parsedTime, value) {
 						mathResult = false
 						break
 					}

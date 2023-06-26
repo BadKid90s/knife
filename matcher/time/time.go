@@ -45,6 +45,32 @@ func Before(datetime time.Time, patterns string) bool {
 	return actualTime.Before(anticipateTime)
 }
 
+func Between(datetime time.Time, patterns string) bool {
+	if len(patterns) == 0 {
+		return true
+	}
+
+	pats := strings.Split(patterns, ",")
+
+	datetime1 := parseTime(pats[0])
+	datetime2 := parseTime(pats[1])
+
+	return datetime1.After(datetime) && datetime2.Before(datetime)
+}
+
+func parseTime(datetimeStr string) time.Time {
+	// 提取时区信息
+	zone, err := parseZone(datetimeStr)
+	if err != nil {
+		log.Fatalln("无法解析时区信息:", err)
+	}
+	// 解析字符串中的时间和时区
+	t := parseDatetime(datetimeStr)
+
+	// 将时间转换到指定的时区
+	return settingZone(t, zone)
+}
+
 func parseDatetime(dateStr string) time.Time {
 	// 查找第一个方括号的索引
 	startIndex := strings.Index(dateStr, "[")
