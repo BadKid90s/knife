@@ -1,8 +1,8 @@
 package route
 
 import (
+	"gateway/filters"
 	"gateway/handler/predicate"
-	"gateway/middleware/filters"
 	"gateway/web"
 )
 
