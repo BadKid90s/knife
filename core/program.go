@@ -1,23 +1,22 @@
 package core
 
 import (
-	"gateway/middleware"
-	"log"
+	"gateway/web"
 	"net"
 	"net/http"
 	"time"
 )
 
-func NewApp(listener net.Listener, middleware middleware.Middleware) *ProgramApp {
+func NewApp(listener net.Listener) *ProgramApp {
 	return &ProgramApp{
-		listener:   listener,
-		middleware: middleware,
+		listener: listener,
+		handler:  web.DispatcherHandlerConstant,
 	}
 }
 
 type ProgramApp struct {
-	listener   net.Listener
-	middleware middleware.Middleware
+	listener net.Listener
+	handler  *web.DispatcherHandler
 }
 
 func (a *ProgramApp) Start() error {
@@ -27,7 +26,7 @@ func (a *ProgramApp) Start() error {
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      2 * time.Minute,
 		IdleTimeout:       5 * time.Minute,
-		Handler:           http.HandlerFunc(a.handleHTTP),
+		Handler:           a.handler,
 	}
 	return httpServer.Serve(a.listener)
 }
@@ -38,11 +37,4 @@ func (a *ProgramApp) Stop() error {
 		return err
 	}
 	return nil
-}
-
-func (a *ProgramApp) handleHTTP(write http.ResponseWriter, request *http.Request) {
-	err := a.middleware.Handle(write, request)
-	if err != nil {
-		log.Printf("handle http error %v", err.Error())
-	}
 }
