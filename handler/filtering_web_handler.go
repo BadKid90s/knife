@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"gateway/filter"
+	"gateway/filter/global"
 	"gateway/route"
 	"gateway/util"
 	"gateway/web"
@@ -14,6 +15,11 @@ func NewFilteringWebHandler() *FilteringWebHandler {
 }
 
 type FilteringWebHandler struct {
+	globalFilters []filter.GatewayFilter
+}
+
+func (h *FilteringWebHandler) AddGlobalFilter(filter filter.GatewayFilter) {
+	h.globalFilters = append(h.globalFilters, filter)
 }
 
 func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
@@ -27,7 +33,7 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 
 	gatewayFilters := gr.GatewayFilters
 
-	globalFilter := filter.GlobalFilter
+	globalFilter := global.Filters
 
 	filters := append(gatewayFilters, globalFilter...)
 
