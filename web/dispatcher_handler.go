@@ -24,6 +24,15 @@ func (h *DispatcherHandler) AddHandler(mapping HandlerMapping) {
 func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.Request) {
 	exchange := NewServerWebExchange(write, request)
 	for _, handlerMapping := range h.handlerMappings {
-		handlerMapping.GetHandler(exchange).Handle(exchange)
+		handler := handlerMapping.GetHandler(exchange)
+		if handler == nil {
+			createNotFoundError(exchange)
+		} else {
+			handler.Handle(exchange)
+		}
 	}
+}
+
+func createNotFoundError(exchange *ServerWebExchange) {
+	http.NotFound(exchange.Write, exchange.Request)
 }
