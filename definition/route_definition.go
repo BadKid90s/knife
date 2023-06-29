@@ -1,12 +1,12 @@
 package definition
 
 type GatewayRoutesDefinition struct {
-	Routes []*RouteDefinition `config:"routes"`
+	Routes []*RouteDefinition `yaml:"routes"`
 }
 
 type RouteDefinition struct {
-	Id         string                 `config:"id"`
-	Uri        string                 `config:"uri"`
-	Order      string                 `config:"order"`
-	Predicates []*PredicateDefinition `config:"predicates"`
+	Id         string                 `yaml:"id"`
+	Uri        string                 `yaml:"uri"`
+	Order      string                 `yaml:"order"`
+	Predicates []*PredicateDefinition `yaml:"predicates"`
 }

@@ -1,8 +1,12 @@
 package core
 
 import (
+	"fmt"
 	"gateway/definition"
+	"gateway/filter"
+	"gateway/filter/global"
 	"gateway/handler"
+	"gateway/network"
 	"gateway/web"
 	"log"
 	"net"
@@ -10,26 +14,29 @@ import (
 	"time"
 )
 
-func NewApp(listener net.Listener, configFile string) *ProgramApp {
+func NewApp(configFile string) *ProgramApp {
+	//分发请求处理器
+	dispatcherHandler := web.DispatcherHandlerConstant
+
+	//解析外部配置
+	parseExteriorConfig(configFile)
+
+	//加载内部配置
+	loadInternalConfig(dispatcherHandler)
+
 	return &ProgramApp{
-		listener:   listener,
-		handler:    web.DispatcherHandlerConstant,
-		configFile: configFile,
+		handler: dispatcherHandler,
 	}
 }
 
 type ProgramApp struct {
-	listener   net.Listener
-	handler    *web.DispatcherHandler
-	configFile string
+	listener net.Listener
+	handler  *web.DispatcherHandler
 }
 
 func (a *ProgramApp) Start() error {
-	//解析外部配置
-	a.parseExteriorConfig()
-
-	//加载内部配置
-	a.loadInternalConfig()
+	//创建监听
+	a.listener = createListener()
 
 	//使用核心中间件来服务http
 	httpServer := &http.Server{
@@ -50,13 +57,27 @@ func (a *ProgramApp) Stop() error {
 	return nil
 }
 
-func (a *ProgramApp) parseExteriorConfig() {
-	err := definition.ParseRouteConfig(a.configFile)
+func (a *ProgramApp) Use(filter filter.GatewayFilter) {
+	global.Filters = append(global.Filters, filter)
+}
+
+func parseExteriorConfig(configFile string) {
+	err := definition.ParseConfig(configFile)
 	if err != nil {
-		log.Fatalf("config file parse err")
+		log.Fatalf("an error occurred in the configuration file parsing [%s] \n", err)
 	}
 }
 
-func (a *ProgramApp) loadInternalConfig() {
-	a.handler.AddHandler(handler.NewRoutePredicateHandlerMapping())
+func loadInternalConfig(dispatcherHandler *web.DispatcherHandler) {
+	dispatcherHandler.AddHandler(handler.NewRoutePredicateHandlerMapping())
+}
+
+func createListener() net.Listener {
+	address := fmt.Sprintf("%s:%d", definition.GatewayServerDefinition.Ip, definition.GatewayServerDefinition.Port)
+	listener, err := network.NewListenTCP(address)
+	if err != nil {
+		log.Fatalf("create a listener to send errors, listen to the address [%s] \n", err)
+	}
+	log.Printf("listener succeeded ,listen to the address [%s] \n", address)
+	return listener
 }

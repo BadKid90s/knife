@@ -1,6 +1,6 @@
 package definition
 
 type PredicateDefinition struct {
-	Name string            `config:"name"`
-	Args map[string]string `config:"args"`
+	Name string            `yaml:"name"`
+	Args map[string]string `yaml:"args"`
 }
