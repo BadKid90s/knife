@@ -1,18 +1,11 @@
 package util
 
 import (
-	"errors"
-	"github.com/elastic/go-ucfg"
+	"os"
 )
 
-// UnpackConfig 解包配置
-func UnpackConfig(config map[string]any, to any) error {
-	if config == nil {
-		return errors.New("config map cannot be null")
-	}
-	configInstance, err := ucfg.NewFrom(config)
-	if err != nil {
-		return err
-	}
-	return configInstance.Unpack(to)
+func ReadConfigFile(configFile string) ([]byte, error) {
+	// 读取 YAML 文件内容
+	yamlFile, err := os.ReadFile(configFile)
+	return yamlFile, err
 }

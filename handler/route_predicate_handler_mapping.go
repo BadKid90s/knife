@@ -30,16 +30,20 @@ func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web.ServerWebExchang
 
 func (r RoutePredicateHandlerMapping) getHandlerInternal(exchange *web.ServerWebExchange) web.Handler {
 	//处理路由信息
-	r.lookupRoute(exchange)
+	gatewayRoute := r.lookupRoute(exchange)
+	if gatewayRoute == nil {
+		return nil
+	}
+	exchange.Attributes[util.GatewayRouteAttr] = gatewayRoute
 	//返回
 	return r.webHandler
 }
 
 func (r *RoutePredicateHandlerMapping) lookupRoute(exchange *web.ServerWebExchange) *route.Route {
-	for _, router := range r.routerLocator.Routes {
-		//if router.Predicates.Apply(exchange) {
-		return router
-		//}
+	for _, router := range r.routerLocator.GetRoutes() {
+		if router.Predicates.Apply(exchange) {
+			return router
+		}
 	}
 	return nil
 }

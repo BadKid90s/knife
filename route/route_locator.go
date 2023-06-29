@@ -1,28 +1,30 @@
 package route
 
 import (
-	"gateway/config"
 	"gateway/filters"
 	"gateway/handler/predicate"
 	"gateway/web"
 )
 
-var predicateFactories = map[string]predicate.RoutePredicateFactory{}
+var predicateFactories = map[string]predicate.RoutePredicateFactory{
+	"Method": &predicate.MethodRoutePredicateFactory{},
+	"After":  &predicate.AfterRoutePredicateFactory{},
+}
 
 func NewDefinitionRouteLocator() *DefinitionRouteLocator {
-	routes := make([]*Route, 0)
-	for _, definition := range config.RouterDefinitions {
-		route := ConvertToRoute(definition)
-		routes = append(routes, route)
-	}
-
-	return &DefinitionRouteLocator{
-		Routes: routes,
-	}
+	return &DefinitionRouteLocator{}
 }
 
 type DefinitionRouteLocator struct {
-	Routes []*Route
+}
+
+func (l *DefinitionRouteLocator) GetRoutes() []*Route {
+	routes := make([]*Route, 0)
+	for _, definition := range RouterDefinitions {
+		route := ConvertToRoute(definition)
+		routes = append(routes, route)
+	}
+	return routes
 }
 
 func ConvertToRoute(routeDefinition *Definition) *Route {
@@ -50,9 +52,8 @@ func combinePredicates(routeDefinition *Definition) predicate.Predicate[*web.Ser
 
 func lookup(routeDefinition *Definition, predicateDefinition predicate.Definition) predicate.Predicate[*web.ServerWebExchange] {
 	factory := predicateFactories[predicateDefinition.Name]
-	factory.NewConfig(predicateDefinition)
 	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
-		Delegate: factory.Apply(),
+		Delegate: factory.Apply(predicateDefinition),
 	}
 }
 

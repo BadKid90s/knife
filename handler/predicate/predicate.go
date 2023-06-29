@@ -36,7 +36,3 @@ func (p *AndPredicate[T]) Apply(t T) bool {
 		return false
 	}()
 }
-
-type GatewayPredicate[T any] struct {
-	DefaultPredicate[T]
-}
