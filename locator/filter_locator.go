@@ -3,13 +3,11 @@ package locator
 import (
 	"gateway/definition"
 	"gateway/filter"
-	"gateway/filter/global"
+	"log"
 )
 
 func getFilters(routeDefinition *definition.RouteDefinition) []filter.GatewayFilter {
-	fs := []filter.GatewayFilter{
-		&global.RouteToRequestUrlFilter{},
-		&global.WebClientHttpRoutingFilter{},
-	}
+	log.Printf("RouteDefinition-%s 加载配置的过滤器。\n", routeDefinition.Id)
+	var fs = make([]filter.GatewayFilter, 0)
 	return fs
 }

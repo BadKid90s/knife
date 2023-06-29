@@ -22,8 +22,8 @@ type DefinitionRouteLocator struct {
 func (l *DefinitionRouteLocator) GetRoutes() []*route.Route {
 	routes := make([]*route.Route, 0)
 	for _, routeDefinition := range definition.RouteDefinitions {
-		route := l.ConvertToRoute(routeDefinition)
-		routes = append(routes, route)
+		r := l.ConvertToRoute(routeDefinition)
+		routes = append(routes, r)
 	}
 	return routes
 }
