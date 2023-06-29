@@ -58,5 +58,8 @@ func lookup(routeDefinition *Definition, predicateDefinition predicate.Definitio
 }
 
 func getFilters(routeDefinition *Definition) []filters.GatewayFilter {
-	return nil
+	fs := []filters.GatewayFilter{
+		&filters.WebClientHttpRoutingFilter{},
+	}
+	return fs
 }

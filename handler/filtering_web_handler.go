@@ -26,7 +26,7 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 	}
 	gatewayFilters := gr.GatewayFilters
 	sort.Slice(gatewayFilters, func(i, j int) bool {
-		return i < j
+		return gatewayFilters[i].GetOrder() < gatewayFilters[j].GetOrder()
 	})
 
 	filters.NewDefaultGatewayFilterChain(gatewayFilters).Filter(exchange)
