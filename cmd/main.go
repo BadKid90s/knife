@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gateway/core"
 	"gateway/network"
-	"gateway/route"
 	"log"
 )
 
@@ -15,12 +14,7 @@ func main() {
 		log.Fatalf("app listen err")
 	}
 
-	err = route.ParseRouteConfig(configFile)
-	if err != nil {
-		log.Fatalf("config file parse err")
-	}
-
-	app := core.NewApp(listener)
+	app := core.NewApp(listener, configFile)
 	err = app.Start()
 	if err != nil {
 		log.Printf("app runing err")

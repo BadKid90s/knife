@@ -1,14 +1,12 @@
-package route
-
-import "gateway/handler/predicate"
+package definition
 
 type GatewayRoutesDefinition struct {
-	Routes []*Definition `config:"routes"`
+	Routes []*RouteDefinition `config:"routes"`
 }
 
-type Definition struct {
+type RouteDefinition struct {
 	Id         string                 `config:"id"`
 	Uri        string                 `config:"uri"`
 	Order      string                 `config:"order"`
-	Predicates []predicate.Definition `config:"predicates"`
+	Predicates []*PredicateDefinition `config:"predicates"`
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"gateway/locator"
 	"gateway/route"
 	"gateway/util"
 	"gateway/web"
@@ -9,13 +10,13 @@ import (
 func NewRoutePredicateHandlerMapping() *RoutePredicateHandlerMapping {
 	return &RoutePredicateHandlerMapping{
 		webHandler:    NewFilteringWebHandler(),
-		routerLocator: route.NewDefinitionRouteLocator(),
+		routerLocator: locator.NewDefinitionRouteLocator(),
 	}
 }
 
 type RoutePredicateHandlerMapping struct {
 	webHandler    *FilteringWebHandler
-	routerLocator *route.DefinitionRouteLocator
+	routerLocator *locator.DefinitionRouteLocator
 }
 
 func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web.ServerWebExchange) web.Handler {
@@ -46,8 +47,4 @@ func (r *RoutePredicateHandlerMapping) lookupRoute(exchange *web.ServerWebExchan
 		}
 	}
 	return nil
-}
-
-func init() {
-	web.DispatcherHandlerConstant.AddHandler(NewRoutePredicateHandlerMapping())
 }

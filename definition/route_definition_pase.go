@@ -1,4 +1,4 @@
-package route
+package definition
 
 import (
 	"gateway/util"
@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-var RouterDefinitions = make([]*Definition, 0)
+var RouteDefinitions = make([]*RouteDefinition, 0)
 
 func ParseRouteConfig(configFile string) error {
 
@@ -21,6 +21,6 @@ func ParseRouteConfig(configFile string) error {
 		log.Fatalf("Failed to unmarshal YAML: %v", err)
 	}
 
-	RouterDefinitions = config.Routes
+	RouteDefinitions = config.Routes
 	return nil
 }

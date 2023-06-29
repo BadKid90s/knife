@@ -1,6 +1,7 @@
-package filters
+package global
 
 import (
+	"gateway/filter"
 	"gateway/util"
 	"gateway/web"
 	"math"
@@ -11,7 +12,7 @@ import (
 type WebClientHttpRoutingFilter struct {
 }
 
-func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, chain *GatewayFilterChain) {
+func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, chain filter.GatewayFilterChain) {
 	requestUrl := exchange.Attributes[util.GatewayRequestUrlAttr]
 	reqUrl, ok := requestUrl.(string)
 	if !ok {

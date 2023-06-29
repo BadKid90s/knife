@@ -1,61 +1,53 @@
-package time
+package factory
 
 import (
 	"errors"
+	"gateway/definition"
+	"gateway/predicate"
+	"gateway/web"
 	"log"
 	"strings"
 	"time"
 )
 
-func After(datetime time.Time, patterns string) bool {
-	if len(patterns) == 0 {
-		return true
-	}
-	// 提取时区信息
-	zone, err := parseZone(patterns)
-	if err != nil {
-		log.Fatalln("无法解析时区信息:", err)
-	}
-	// 解析字符串中的时间和时区
-	t := parseDatetime(patterns)
+type AfterRoutePredicateFactory struct{}
 
-	// 将时间转换到指定的时区
-	actualTime := settingZone(t, zone)
-	anticipateTime := settingZone(datetime, zone)
+func (f *AfterRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
+	config := f.parseConfig(definition)
+	//return nil
+	return f.apply(config)
 
-	return actualTime.After(anticipateTime)
+}
+func (f *AfterRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) *AfterPredicateConfig {
+
+	val := definition.Args["pattern"]
+	t := parseTime(val)
+	return &AfterPredicateConfig{
+		time: t,
+	}
 }
 
-func Before(datetime time.Time, patterns string) bool {
-	if len(patterns) == 0 {
-		return true
+func (f *AfterRoutePredicateFactory) apply(config *AfterPredicateConfig) predicate.Predicate[*web.ServerWebExchange] {
+	return &AfterPredicate[*web.ServerWebExchange]{
+		time: config.time,
 	}
-	// 提取时区信息
-	zone, err := parseZone(patterns)
-	if err != nil {
-		log.Fatalln("无法解析时区信息:", err)
-	}
-	// 解析字符串中的时间和时区
-	t := parseDatetime(patterns)
-
-	// 将时间转换到指定的时区
-	actualTime := settingZone(t, zone)
-	anticipateTime := settingZone(datetime, zone)
-
-	return actualTime.Before(anticipateTime)
 }
 
-func Between(datetime time.Time, patterns string) bool {
-	if len(patterns) == 0 {
-		return true
-	}
+type AfterPredicate[T any] struct {
+	predicate.DefaultPredicate[T]
+	time time.Time
+}
 
-	pats := strings.Split(patterns, ",")
+func (p *AfterPredicate[T]) Apply(T) bool {
+	return time.Now().After(p.time)
+}
 
-	datetime1 := parseTime(pats[0])
-	datetime2 := parseTime(pats[1])
+type AfterPredicateConfig struct {
+	time time.Time
+}
 
-	return datetime1.After(datetime) && datetime2.Before(datetime)
+func (c *AfterPredicateConfig) ToString() string {
+	return ""
 }
 
 func parseTime(datetimeStr string) time.Time {

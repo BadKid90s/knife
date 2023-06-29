@@ -1,6 +1,6 @@
-package predicate
+package definition
 
-type Definition struct {
+type PredicateDefinition struct {
 	Name string            `config:"name"`
 	Args map[string]string `config:"args"`
 }

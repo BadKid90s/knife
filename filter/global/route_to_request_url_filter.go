@@ -1,6 +1,7 @@
-package filters
+package global
 
 import (
+	"gateway/filter"
 	"gateway/route"
 	"gateway/util"
 	"gateway/web"
@@ -10,7 +11,7 @@ import (
 type RouteToRequestUrlFilter struct {
 }
 
-func (f *RouteToRequestUrlFilter) Filter(exchange *web.ServerWebExchange, chain *GatewayFilterChain) {
+func (f *RouteToRequestUrlFilter) Filter(exchange *web.ServerWebExchange, chain filter.GatewayFilterChain) {
 	routeAttr := exchange.Attributes[util.GatewayRouteAttr]
 	gatewayRoute, ok := routeAttr.(*route.Route)
 	if !ok {

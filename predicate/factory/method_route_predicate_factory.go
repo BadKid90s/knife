@@ -1,6 +1,8 @@
-package predicate
+package factory
 
 import (
+	"gateway/definition"
+	"gateway/predicate"
 	"gateway/web"
 	"strings"
 )
@@ -8,13 +10,13 @@ import (
 type MethodRoutePredicateFactory struct {
 }
 
-func (f *MethodRoutePredicateFactory) Apply(definition Definition) Predicate[*web.ServerWebExchange] {
+func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
 	config := f.parseConfig(definition)
 	//return nil
 	return f.apply(config)
 
 }
-func (f *MethodRoutePredicateFactory) parseConfig(definition Definition) *MethodPredicateConfig {
+func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) *MethodPredicateConfig {
 	val := definition.Args["pattern"]
 	methods := strings.Split(val, ",")
 	return &MethodPredicateConfig{
@@ -22,7 +24,7 @@ func (f *MethodRoutePredicateFactory) parseConfig(definition Definition) *Method
 	}
 }
 
-func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) Predicate[*web.ServerWebExchange] {
+func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) predicate.Predicate[*web.ServerWebExchange] {
 	return &MethodPredicate[*web.ServerWebExchange]{
 		methods: config.methods,
 	}
@@ -31,7 +33,7 @@ func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) Predi
 // MethodPredicate
 // 谓词信息
 type MethodPredicate[T any] struct {
-	DefaultPredicate[T]
+	predicate.DefaultPredicate[T]
 	methods []string
 }
 

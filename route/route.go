@@ -1,8 +1,8 @@
 package route
 
 import (
-	"gateway/filters"
-	"gateway/handler/predicate"
+	"gateway/filter"
+	"gateway/predicate"
 	"gateway/web"
 )
 
@@ -11,5 +11,5 @@ type Route struct {
 	Uri            string
 	Order          string
 	Predicates     predicate.Predicate[*web.ServerWebExchange]
-	GatewayFilters []filters.GatewayFilter
+	GatewayFilters []filter.GatewayFilter
 }

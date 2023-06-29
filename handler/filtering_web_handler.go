@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	"gateway/filters"
+	"gateway/filter"
 	"gateway/route"
 	"gateway/util"
 	"gateway/web"
@@ -29,5 +29,5 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 		return gatewayFilters[i].GetOrder() < gatewayFilters[j].GetOrder()
 	})
 
-	filters.NewDefaultGatewayFilterChain(gatewayFilters).Filter(exchange)
+	filter.NewDefaultGatewayFilterChain(gatewayFilters).Filter(exchange)
 }
