@@ -23,6 +23,7 @@ func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, cha
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(targetUrl)
+	proxy.ErrorLog = util.NewHttpLogger()
 	proxy.ServeHTTP(exchange.Write, exchange.Request)
 	chain.Filter(exchange)
 }
