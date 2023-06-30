@@ -18,7 +18,7 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) predicate.Pr
 	return p
 }
 
-func lookup(routeDefinition *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
+func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
 	f := factory.PredicateFactories[predicateDefinition.Name]
 	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
 		Delegate: f.Apply(predicateDefinition),
