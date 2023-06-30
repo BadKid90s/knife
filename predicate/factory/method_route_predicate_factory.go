@@ -10,18 +10,21 @@ import (
 type MethodRoutePredicateFactory struct {
 }
 
-func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
-	config := f.parseConfig(definition)
+func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+	config, err := f.parseConfig(definition)
+	if err != nil {
+		return nil, err
+	}
 	//return nil
-	return f.apply(config)
+	return f.apply(config), nil
 
 }
-func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) *MethodPredicateConfig {
+func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) (*MethodPredicateConfig, error) {
 	val := definition.Args["pattern"]
 	methods := strings.Split(val, ",")
 	return &MethodPredicateConfig{
 		methods: methods,
-	}
+	}, nil
 }
 
 func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) predicate.Predicate[*web.ServerWebExchange] {

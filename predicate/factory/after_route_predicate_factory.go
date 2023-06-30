@@ -12,19 +12,22 @@ import (
 
 type AfterRoutePredicateFactory struct{}
 
-func (f *AfterRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
-	config := f.parseConfig(definition)
+func (f *AfterRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+	config, err := f.parseConfig(definition)
+	if err != nil {
+		return nil, err
+	}
 	//return nil
-	return f.apply(config)
+	return f.apply(config), nil
 
 }
-func (f *AfterRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) *AfterPredicateConfig {
+func (f *AfterRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) (*AfterPredicateConfig, error) {
 
 	val := definition.Args["pattern"]
 	t := parseTime(val)
 	return &AfterPredicateConfig{
 		time: t,
-	}
+	}, nil
 }
 
 func (f *AfterRoutePredicateFactory) apply(config *AfterPredicateConfig) predicate.Predicate[*web.ServerWebExchange] {

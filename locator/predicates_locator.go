@@ -32,7 +32,11 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 	if !ok {
 		return nil, fmt.Errorf("Unsupported predicate [%s] \n", predicateDefinition.Name)
 	}
+	apply, err := f.Apply(predicateDefinition)
+	if err != nil {
+		return nil, err
+	}
 	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
-		Delegate: f.Apply(predicateDefinition),
+		Delegate: apply,
 	}, nil
 }

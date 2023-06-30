@@ -6,5 +6,5 @@ import (
 )
 
 type RoutePredicateFactory interface {
-	Apply(definition *definition.PredicateDefinition) Predicate[*web.ServerWebExchange]
+	Apply(definition *definition.PredicateDefinition) (Predicate[*web.ServerWebExchange], error)
 }
