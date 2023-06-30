@@ -1,5 +1,5 @@
 package web
 
 type HandlerMapping interface {
-	GetHandler(exchange *ServerWebExchange) Handler
+	GetHandler(exchange *ServerWebExchange) (Handler, error)
 }

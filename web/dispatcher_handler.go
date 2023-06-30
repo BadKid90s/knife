@@ -1,6 +1,9 @@
 package web
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 var DispatcherHandlerConstant = newDispatcherHandler()
 
@@ -24,8 +27,10 @@ func (h *DispatcherHandler) AddHandler(mapping HandlerMapping) {
 func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.Request) {
 	exchange := NewServerWebExchange(write, request)
 	for _, handlerMapping := range h.handlerMappings {
-		handler := handlerMapping.GetHandler(exchange)
-		if handler == nil {
+		handler, err := handlerMapping.GetHandler(exchange)
+		if err != nil {
+			log.Printf(err.Error())
+		} else if handler == nil {
 			createNotFoundError(exchange)
 		} else {
 			handler.Handle(exchange)

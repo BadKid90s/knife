@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-func getFilters(_ *definition.RouteDefinition) []filter.GatewayFilter {
+func getFilters(_ *definition.RouteDefinition) ([]filter.GatewayFilter, error) {
 	var fs = make([]filter.GatewayFilter, 0)
 	log.Printf("completed loading routing filter, size [%d] \n", len(fs))
-	return fs
+	return fs, nil
 }
