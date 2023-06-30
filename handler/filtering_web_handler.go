@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"fmt"
 	"gateway/filter"
 	"gateway/filter/global"
 	"gateway/route"
 	"gateway/util"
 	"gateway/web"
+	"log"
 	"sort"
 )
 
@@ -23,7 +23,7 @@ func (h *FilteringWebHandler) AddGlobalFilter(filter filter.GatewayFilter) {
 }
 
 func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
-	fmt.Printf("FilteringWebHandler uri [%s] \n", exchange.Request.URL.Path)
+	log.Printf("filtering handler uri [%s] \n", exchange.Request.URL.Path)
 
 	r := exchange.Attributes[util.GatewayRouteAttr]
 	gr, ok := r.(*route.Route)
