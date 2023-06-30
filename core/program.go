@@ -26,17 +26,23 @@ func NewApp(configFile string) *ProgramApp {
 
 	return &ProgramApp{
 		handler: dispatcherHandler,
+		ip:      definition.GatewayServerDefinition.Ip,
+		port:    definition.GatewayServerDefinition.Port,
 	}
 }
 
 type ProgramApp struct {
 	listener net.Listener
 	handler  *web.DispatcherHandler
+	port     int
+	ip       string
 }
 
-func (a *ProgramApp) Start() error {
+func (a *ProgramApp) Start() {
+	startTime := time.Now()
+
 	//创建监听
-	a.listener = createListener()
+	a.createListener()
 
 	//使用核心中间件来服务http
 	httpServer := &http.Server{
@@ -46,7 +52,12 @@ func (a *ProgramApp) Start() error {
 		IdleTimeout:       5 * time.Minute,
 		Handler:           a.handler,
 	}
-	return httpServer.Serve(a.listener)
+	elapsed := time.Since(startTime)
+	log.Printf("Started GatewayApplication in %s seconds", elapsed)
+	err := httpServer.Serve(a.listener)
+	if err != nil {
+		log.Printf("app runing err %s \n", err)
+	}
 }
 
 func (a *ProgramApp) Stop() error {
@@ -61,6 +72,16 @@ func (a *ProgramApp) Use(filter filter.GatewayFilter) {
 	global.Filters = append(global.Filters, filter)
 }
 
+func (a *ProgramApp) createListener() {
+	address := fmt.Sprintf("%s:%d", a.ip, a.port)
+	listener, err := network.NewListenTCP(address)
+	if err != nil {
+		log.Fatalf("create a listener to send errors, listen to the address [%s] \n", err)
+	}
+	log.Printf("listener succeeded,listen to the address [%s] \n", address)
+	a.listener = listener
+}
+
 func parseExteriorConfig(configFile string) {
 	err := definition.ParseConfig(configFile)
 	if err != nil {
@@ -70,14 +91,4 @@ func parseExteriorConfig(configFile string) {
 
 func loadInternalConfig(dispatcherHandler *web.DispatcherHandler) {
 	dispatcherHandler.AddHandler(handler.NewRoutePredicateHandlerMapping())
-}
-
-func createListener() net.Listener {
-	address := fmt.Sprintf("%s:%d", definition.GatewayServerDefinition.Ip, definition.GatewayServerDefinition.Port)
-	listener, err := network.NewListenTCP(address)
-	if err != nil {
-		log.Fatalf("create a listener to send errors, listen to the address [%s] \n", err)
-	}
-	log.Printf("listener succeeded ,listen to the address [%s] \n", address)
-	return listener
 }

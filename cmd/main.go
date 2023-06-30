@@ -13,10 +13,8 @@ func main() {
 
 	app := core.NewApp(configFile)
 
-	err := app.Start()
-	if err != nil {
-		log.Printf("app runing err %s \n", err)
-	}
+	app.Start()
+
 }
 
 func printBanner() {
