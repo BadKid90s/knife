@@ -39,6 +39,8 @@ type ProgramApp struct {
 }
 
 func (a *ProgramApp) Start() {
+	log.Printf("Starting GatewayApplication")
+
 	startTime := time.Now()
 
 	//创建监听
@@ -54,6 +56,8 @@ func (a *ProgramApp) Start() {
 	}
 	elapsed := time.Since(startTime)
 	log.Printf("Started GatewayApplication in %s seconds", elapsed)
+
+	//监听服务
 	err := httpServer.Serve(a.listener)
 	if err != nil {
 		log.Printf("app runing err %s \n", err)
