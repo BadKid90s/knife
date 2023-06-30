@@ -5,6 +5,7 @@ import (
 	"gateway/route"
 	"gateway/util"
 	"gateway/web"
+	"log"
 )
 
 func NewRoutePredicateHandlerMapping() *RoutePredicateHandlerMapping {
@@ -41,9 +42,10 @@ func (r RoutePredicateHandlerMapping) getHandlerInternal(exchange *web.ServerWeb
 }
 
 func (r *RoutePredicateHandlerMapping) lookupRoute(exchange *web.ServerWebExchange) *route.Route {
-	for _, router := range r.routerLocator.GetRoutes() {
-		if router.Predicates.Apply(exchange) {
-			return router
+	for _, r := range r.routerLocator.GetRoutes() {
+		if r.Predicates.Apply(exchange) {
+			log.Printf("predicate route success [%s] \n", r.Id)
+			return r
 		}
 	}
 	return nil

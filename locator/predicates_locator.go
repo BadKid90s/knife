@@ -5,6 +5,7 @@ import (
 	"gateway/predicate"
 	"gateway/predicate/factory"
 	"gateway/web"
+	"log"
 )
 
 // 组合谓词
@@ -15,6 +16,7 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) predicate.Pr
 		found := lookup(routeDefinition, andPredicate)
 		p = p.And(found)
 	}
+	log.Printf("completed loading routing predicates \n")
 	return p
 }
 

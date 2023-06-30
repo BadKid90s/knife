@@ -12,7 +12,7 @@ func (*httpErrorLogWriter) Write(p []byte) (int, error) {
 	message := string(p)
 	if !strings.HasPrefix(message, "http: TLS handshake error") &&
 		!strings.HasSuffix(message, ": EOF\n") &&
-		!strings.HasPrefix(message, "http: proxy error: context canceled") {
+		!strings.HasPrefix(message, "proxy error: context canceled") {
 		log.Printf(message)
 	}
 	return len(p), nil

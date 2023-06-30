@@ -3,6 +3,7 @@ package locator
 import (
 	"gateway/definition"
 	"gateway/route"
+	"log"
 )
 
 func NewDefinitionRouteLocator() *DefinitionRouteLocator {
@@ -22,6 +23,7 @@ func (l *DefinitionRouteLocator) GetRoutes() []*route.Route {
 }
 
 func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition.RouteDefinition) *route.Route {
+	log.Printf("started covert route  [%s] \n", routeDefinition.Id)
 	predicates := combinePredicates(routeDefinition)
 	gatewayFilters := getFilters(routeDefinition)
 	return &route.Route{
