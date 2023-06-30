@@ -2,9 +2,10 @@ module gateway
 
 go 1.19
 
+require gopkg.in/yaml.v2 v2.4.0
+
 require (
-	github.com/elastic/go-ucfg v0.8.6 // indirect
-	github.com/sirupsen/logrus v1.9.2 // indirect
-	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	github.com/creasty/defaults v1.7.0 // indirect
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
