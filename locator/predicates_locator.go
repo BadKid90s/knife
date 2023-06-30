@@ -3,6 +3,7 @@ package locator
 import (
 	"gateway/definition"
 	"gateway/predicate"
+	"gateway/predicate/factory"
 	"gateway/web"
 )
 
@@ -18,8 +19,8 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) predicate.Pr
 }
 
 func lookup(routeDefinition *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) predicate.Predicate[*web.ServerWebExchange] {
-	factory := predicateFactories[predicateDefinition.Name]
+	f := factory.PredicateFactories[predicateDefinition.Name]
 	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
-		Delegate: factory.Apply(predicateDefinition),
+		Delegate: f.Apply(predicateDefinition),
 	}
 }

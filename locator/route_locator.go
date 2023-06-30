@@ -2,15 +2,8 @@ package locator
 
 import (
 	"gateway/definition"
-	"gateway/predicate"
-	"gateway/predicate/factory"
 	"gateway/route"
 )
-
-var predicateFactories = map[string]predicate.RoutePredicateFactory{
-	"Method": &factory.MethodRoutePredicateFactory{},
-	"After":  &factory.AfterRoutePredicateFactory{},
-}
 
 func NewDefinitionRouteLocator() *DefinitionRouteLocator {
 	return &DefinitionRouteLocator{}
