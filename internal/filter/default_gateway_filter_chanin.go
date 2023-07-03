@@ -1,7 +1,7 @@
 package filter
 
 import (
-	"gateway/web"
+	"gateway/internal/web"
 	"log"
 	"reflect"
 )

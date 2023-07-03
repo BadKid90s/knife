@@ -1,6 +1,8 @@
 package global
 
-import "gateway/filter"
+import (
+	"gateway/internal/filter"
+)
 
 var Filters = []filter.GatewayFilter{
 	&RouteToRequestUrlFilter{},

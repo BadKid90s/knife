@@ -2,7 +2,7 @@ package definition
 
 import (
 	"errors"
-	"gateway/util"
+	"gateway/internal/util"
 )
 
 func ParseConfig(configFile string) error {

@@ -1,6 +1,8 @@
 package factory
 
-import "gateway/predicate"
+import (
+	"gateway/internal/predicate"
+)
 
 var PredicateFactories = map[string]predicate.RoutePredicateFactory{
 	"Method": &MethodRoutePredicateFactory{},

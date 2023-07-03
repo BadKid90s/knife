@@ -1,16 +1,16 @@
 package factory
 
 import (
-	"gateway/definition"
-	"gateway/predicate"
-	"gateway/web"
+	"gateway/config/definition"
+	predicate2 "gateway/internal/predicate"
+	"gateway/internal/web"
 	"strings"
 )
 
 type MethodRoutePredicateFactory struct {
 }
 
-func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate2.Predicate[*web.ServerWebExchange], error) {
 	config, err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.Predica
 	}, nil
 }
 
-func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) predicate.Predicate[*web.ServerWebExchange] {
+func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) predicate2.Predicate[*web.ServerWebExchange] {
 	return &MethodPredicate[*web.ServerWebExchange]{
 		methods: config.methods,
 	}
@@ -36,7 +36,7 @@ func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) predi
 // MethodPredicate
 // 谓词信息
 type MethodPredicate[T any] struct {
-	predicate.DefaultPredicate[T]
+	predicate2.DefaultPredicate[T]
 	methods []string
 }
 

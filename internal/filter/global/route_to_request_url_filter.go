@@ -1,10 +1,10 @@
 package global
 
 import (
-	"gateway/filter"
-	"gateway/route"
-	"gateway/util"
-	"gateway/web"
+	"gateway/internal/filter"
+	"gateway/internal/route"
+	"gateway/internal/util"
+	"gateway/internal/web"
 	"math"
 )
 

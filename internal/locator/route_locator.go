@@ -1,8 +1,8 @@
 package locator
 
 import (
-	"gateway/definition"
-	"gateway/route"
+	"gateway/config/definition"
+	"gateway/internal/route"
 	"log"
 )
 

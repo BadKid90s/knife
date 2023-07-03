@@ -2,12 +2,12 @@ package core
 
 import (
 	"fmt"
-	"gateway/definition"
-	"gateway/filter"
-	"gateway/filter/global"
-	"gateway/handler"
-	"gateway/network"
-	"gateway/web"
+	"gateway/config/definition"
+	"gateway/internal/filter"
+	"gateway/internal/filter/global"
+	"gateway/internal/handler"
+	"gateway/internal/network"
+	"gateway/internal/web"
 	"log"
 	"net"
 	"net/http"

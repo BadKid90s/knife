@@ -2,15 +2,15 @@ package locator
 
 import (
 	"fmt"
-	"gateway/definition"
-	"gateway/predicate"
-	"gateway/predicate/factory"
-	"gateway/web"
+	"gateway/config/definition"
+	predicate2 "gateway/internal/predicate"
+	"gateway/internal/predicate/factory"
+	"gateway/internal/web"
 	"log"
 )
 
 // 组合谓词
-func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate2.Predicate[*web.ServerWebExchange], error) {
 	predicates := routeDefinition.Predicates
 	p, err := lookup(routeDefinition, predicates[0])
 	if err != nil {
@@ -27,7 +27,7 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.P
 	return p, nil
 }
 
-func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) (predicate2.Predicate[*web.ServerWebExchange], error) {
 	f, ok := factory.PredicateFactories[predicateDefinition.Name]
 	if !ok {
 		return nil, fmt.Errorf("Unsupported predicate [%s] \n", predicateDefinition.Name)
@@ -36,7 +36,7 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 	if err != nil {
 		return nil, err
 	}
-	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
+	return &predicate2.DefaultPredicate[*web.ServerWebExchange]{
 		Delegate: apply,
 	}, nil
 }

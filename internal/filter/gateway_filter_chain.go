@@ -1,6 +1,8 @@
 package filter
 
-import "gateway/web"
+import (
+	"gateway/internal/web"
+)
 
 type GatewayFilterChain interface {
 	Filter(exchange *web.ServerWebExchange)

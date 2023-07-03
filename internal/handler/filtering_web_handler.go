@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"gateway/filter"
-	"gateway/filter/global"
-	"gateway/route"
-	"gateway/util"
-	"gateway/web"
+	filter2 "gateway/internal/filter"
+	"gateway/internal/filter/global"
+	"gateway/internal/route"
+	"gateway/internal/util"
+	"gateway/internal/web"
 	"log"
 	"sort"
 )
@@ -15,10 +15,10 @@ func NewFilteringWebHandler() *FilteringWebHandler {
 }
 
 type FilteringWebHandler struct {
-	globalFilters []filter.GatewayFilter
+	globalFilters []filter2.GatewayFilter
 }
 
-func (h *FilteringWebHandler) AddGlobalFilter(filter filter.GatewayFilter) {
+func (h *FilteringWebHandler) AddGlobalFilter(filter filter2.GatewayFilter) {
 	h.globalFilters = append(h.globalFilters, filter)
 }
 
@@ -41,5 +41,5 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 		return filters[i].GetOrder() < filters[j].GetOrder()
 	})
 
-	filter.NewDefaultGatewayFilterChain(filters).Filter(exchange)
+	filter2.NewDefaultGatewayFilterChain(filters).Filter(exchange)
 }

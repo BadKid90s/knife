@@ -2,10 +2,10 @@ package handler
 
 import (
 	"errors"
-	"gateway/locator"
-	"gateway/route"
-	"gateway/util"
-	"gateway/web"
+	"gateway/internal/locator"
+	"gateway/internal/route"
+	util2 "gateway/internal/util"
+	web2 "gateway/internal/web"
 	"log"
 )
 
@@ -21,31 +21,31 @@ type RoutePredicateHandlerMapping struct {
 	routerLocator *locator.DefinitionRouteLocator
 }
 
-func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web.ServerWebExchange) (web.Handler, error) {
+func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web2.ServerWebExchange) (web2.Handler, error) {
 	handler, err := r.getHandlerInternal(exchange)
 	if err != nil {
 		return nil, err
 	}
 	request := exchange.Request
 	//判断是否支持跨域请求
-	if handler != nil || util.IsPreFlightRequest(request) {
+	if handler != nil || util2.IsPreFlightRequest(request) {
 		//corsProcessor.process(config, exchange)
 	}
 	return handler, nil
 }
 
-func (r RoutePredicateHandlerMapping) getHandlerInternal(exchange *web.ServerWebExchange) (web.Handler, error) {
+func (r RoutePredicateHandlerMapping) getHandlerInternal(exchange *web2.ServerWebExchange) (web2.Handler, error) {
 	//处理路由信息
 	gatewayRoute, err := r.lookupRoute(exchange)
 	if err != nil {
 		return nil, err
 	}
-	exchange.Attributes[util.GatewayRouteAttr] = gatewayRoute
+	exchange.Attributes[util2.GatewayRouteAttr] = gatewayRoute
 	//返回
 	return r.webHandler, nil
 }
 
-func (r *RoutePredicateHandlerMapping) lookupRoute(exchange *web.ServerWebExchange) (*route.Route, error) {
+func (r *RoutePredicateHandlerMapping) lookupRoute(exchange *web2.ServerWebExchange) (*route.Route, error) {
 	routes, err := r.routerLocator.GetRoutes()
 	if err != nil {
 		return nil, err

@@ -2,9 +2,9 @@ package factory
 
 import (
 	"errors"
-	"gateway/definition"
-	"gateway/predicate"
-	"gateway/web"
+	"gateway/config/definition"
+	predicate2 "gateway/internal/predicate"
+	"gateway/internal/web"
 	"log"
 	"strings"
 	"time"
@@ -12,7 +12,7 @@ import (
 
 type AfterRoutePredicateFactory struct{}
 
-func (f *AfterRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *AfterRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate2.Predicate[*web.ServerWebExchange], error) {
 	config, err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -30,14 +30,14 @@ func (f *AfterRoutePredicateFactory) parseConfig(definition *definition.Predicat
 	}, nil
 }
 
-func (f *AfterRoutePredicateFactory) apply(config *AfterPredicateConfig) predicate.Predicate[*web.ServerWebExchange] {
+func (f *AfterRoutePredicateFactory) apply(config *AfterPredicateConfig) predicate2.Predicate[*web.ServerWebExchange] {
 	return &AfterPredicate[*web.ServerWebExchange]{
 		time: config.time,
 	}
 }
 
 type AfterPredicate[T any] struct {
-	predicate.DefaultPredicate[T]
+	predicate2.DefaultPredicate[T]
 	time time.Time
 }
 

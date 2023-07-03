@@ -1,8 +1,8 @@
 package predicate
 
 import (
-	"gateway/definition"
-	"gateway/web"
+	"gateway/config/definition"
+	"gateway/internal/web"
 )
 
 type RoutePredicateFactory interface {

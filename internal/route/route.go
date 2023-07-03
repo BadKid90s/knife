@@ -1,9 +1,9 @@
 package route
 
 import (
-	"gateway/filter"
-	"gateway/predicate"
-	"gateway/web"
+	"gateway/internal/filter"
+	"gateway/internal/predicate"
+	"gateway/internal/web"
 )
 
 type Route struct {
