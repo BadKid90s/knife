@@ -22,10 +22,7 @@ func (f *AfterRoutePredicateFactory) Apply(definition *definition.PredicateDefin
 
 }
 func (f *AfterRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
-	args := make([]string, 0)
-	for _, value := range definition.Args {
-		args = append(args, value)
-	}
+	args := getArgs(definition)
 	t := util.ParseTime(args[0])
 	f.config = &AfterPredicateConfig{
 		time: t,

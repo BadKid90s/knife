@@ -21,10 +21,7 @@ func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 
 }
 func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
-	args := make([]string, 0)
-	for _, value := range definition.Args {
-		args = append(args, value)
-	}
+	args := getArgs(definition)
 	methods := strings.Split(args[0], ",")
 	f.config = &MethodPredicateConfig{
 		methods: methods,
