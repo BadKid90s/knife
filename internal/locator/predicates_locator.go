@@ -36,8 +36,8 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 	if err != nil {
 		return nil, err
 	}
-	if apply != nil {
-		return nil, fmt.Errorf("an error occurred in building Predicate[%s]\n", predicateDefinition.Name)
+	if apply == nil {
+		return nil, fmt.Errorf("an error occurred in building Predicate [%s]\n", predicateDefinition.Name)
 	}
 	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
 		Delegate: apply,
