@@ -2,41 +2,46 @@ package factory
 
 import (
 	"gateway/config/definition"
-	predicate2 "gateway/internal/predicate"
+	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"strings"
 )
 
 type MethodRoutePredicateFactory struct {
+	config *MethodPredicateConfig
 }
 
-func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate2.Predicate[*web.ServerWebExchange], error) {
-	config, err := f.parseConfig(definition)
+func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
 	}
 	//return nil
-	return f.apply(config), nil
+	return f.apply(), nil
 
 }
-func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) (*MethodPredicateConfig, error) {
-	val := definition.Args["pattern"]
-	methods := strings.Split(val, ",")
-	return &MethodPredicateConfig{
+func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+	args := make([]string, 0)
+	for _, value := range definition.Args {
+		args = append(args, value)
+	}
+	methods := strings.Split(args[0], ",")
+	f.config = &MethodPredicateConfig{
 		methods: methods,
-	}, nil
+	}
+	return nil
 }
 
-func (f *MethodRoutePredicateFactory) apply(config *MethodPredicateConfig) predicate2.Predicate[*web.ServerWebExchange] {
+func (f *MethodRoutePredicateFactory) apply() predicate.Predicate[*web.ServerWebExchange] {
 	return &MethodPredicate[*web.ServerWebExchange]{
-		methods: config.methods,
+		methods: f.config.methods,
 	}
 }
 
 // MethodPredicate
 // 谓词信息
 type MethodPredicate[T any] struct {
-	predicate2.DefaultPredicate[T]
+	predicate.DefaultPredicate[T]
 	methods []string
 }
 
