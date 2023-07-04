@@ -11,3 +11,6 @@ routes:
       - name: After
         args:
           pattern: 2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
+      - name: Before
+        args:
+          pattern: 2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
