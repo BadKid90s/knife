@@ -8,7 +8,7 @@ import (
 	"gateway/internal/predicate/factory"
 	"gateway/internal/route"
 	"gateway/internal/web"
-	"log"
+	"gateway/logger"
 )
 
 func NewDefinitionRouteLocator() *DefinitionRouteLocator {
@@ -31,7 +31,7 @@ func (l *DefinitionRouteLocator) GetRoutes() ([]*route.Route, error) {
 }
 
 func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition.RouteDefinition) (*route.Route, error) {
-	log.Printf("started covert route [%s] \n", routeDefinition.Id)
+	logger.Logger.Debugf("started covert route, route-id: %s", routeDefinition.Id)
 	predicates, err := combinePredicates(routeDefinition)
 	if err != nil {
 		return nil, err
@@ -63,21 +63,21 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.P
 		}
 		p = p.And(found)
 	}
-	log.Printf("completed loading routing predicates \n")
+	logger.Logger.Debugf("completed loading routing predicates ")
 	return p, nil
 }
 
 func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
 	f, ok := factory.PredicateFactories[predicateDefinition.Name]
 	if !ok {
-		return nil, fmt.Errorf("Unsupported predicate [%s] \n", predicateDefinition.Name)
+		return nil, fmt.Errorf("Unsupported predicate [%s] ", predicateDefinition.Name)
 	}
 	apply, err := f.Apply(predicateDefinition)
 	if err != nil {
 		return nil, err
 	}
 	if apply == nil {
-		return nil, fmt.Errorf("an error occurred in building Predicate [%s]\n", predicateDefinition.Name)
+		return nil, fmt.Errorf("an error occurred in building Predicate [%s] ", predicateDefinition.Name)
 	}
 	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
 		Delegate: apply,
@@ -85,6 +85,6 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 }
 func getFilters(_ *definition.RouteDefinition) ([]filter.GatewayFilter, error) {
 	var fs = make([]filter.GatewayFilter, 0)
-	log.Printf("completed loading routing filter, size [%d] \n", len(fs))
+	logger.Logger.Debugf("completed loading routing filter, filter-size: %d ", len(fs))
 	return fs, nil
 }

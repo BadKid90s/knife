@@ -6,7 +6,7 @@ import (
 	"gateway/internal/route"
 	util2 "gateway/internal/util"
 	web2 "gateway/internal/web"
-	"log"
+	"gateway/logger"
 )
 
 func NewRoutePredicateHandlerMapping() *RoutePredicateHandlerMapping {
@@ -52,9 +52,9 @@ func (r *RoutePredicateHandlerMapping) lookupRoute(exchange *web2.ServerWebExcha
 	}
 	for _, r := range routes {
 		if r.Predicates.Apply(exchange) {
-			log.Printf("predicate route success [%s] \n", r.Id)
+			logger.Logger.Debugf("predicate route success. route-id: %s ", r.Id)
 			return r, nil
 		}
 	}
-	return nil, errors.New("no routing information matched \n")
+	return nil, errors.New("no routing information matched ")
 }

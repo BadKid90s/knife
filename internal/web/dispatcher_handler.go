@@ -1,6 +1,7 @@
 package web
 
 import (
+	"gateway/logger"
 	"log"
 	"net/http"
 	"time"
@@ -27,7 +28,7 @@ func (h *DispatcherHandler) AddHandler(mapping HandlerMapping) {
 // request: 请求
 func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.Request) {
 	startTime := time.Now()
-	log.Printf("dispatcher handler received request. url [%s] \n", request.URL)
+	logger.Logger.Infof("dispatcher handler received request. url: %s ", request.URL)
 
 	exchange := NewServerWebExchange(write, request)
 	for _, handlerMapping := range h.handlerMappings {
@@ -42,7 +43,7 @@ func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.R
 	}
 
 	elapsed := time.Since(startTime)
-	log.Printf("dispatcher handler process sucess in %s", elapsed)
+	logger.Logger.Infof("dispatcher handler process sucess in %s", elapsed)
 }
 
 func createNotFoundError(exchange *ServerWebExchange) {

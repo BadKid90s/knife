@@ -7,22 +7,27 @@ import (
 	"gateway/internal/filter/global"
 	"gateway/internal/handler"
 	"gateway/internal/network"
+	"gateway/internal/util"
 	"gateway/internal/web"
-	"log"
+	"gateway/logger"
 	"net"
 	"net/http"
 	"time"
 )
 
 func NewApp(configFile string) *ProgramApp {
-	log.Printf("starting GatewayApplication")
 	startTime := time.Now()
 
-	//分发请求处理器
-	dispatcherHandler := web.DispatcherHandlerConstant
+	//打印 banner
+	printBanner()
 
 	//解析外部配置
 	parseExteriorConfig(configFile)
+
+	logger.Logger.Infof("starting GatewayApplication")
+
+	//分发请求处理器
+	dispatcherHandler := web.DispatcherHandlerConstant
 
 	//加载内部配置
 	loadInternalConfig(dispatcherHandler)
@@ -56,12 +61,12 @@ func (a *ProgramApp) Start() {
 		Handler:           a.handler,
 	}
 	elapsed := time.Since(a.startTime)
-	log.Printf("started GatewayApplication in %s", elapsed)
+	logger.Logger.Infof("started GatewayApplication in %s", elapsed)
 
 	//监听服务
 	err := httpServer.Serve(a.listener)
 	if err != nil {
-		log.Printf("app runing err %s \n", err)
+		logger.Logger.Infof("app runing err %s", err)
 	}
 }
 
@@ -81,19 +86,27 @@ func (a *ProgramApp) createListener() {
 	address := fmt.Sprintf("%s:%d", a.ip, a.port)
 	listener, err := network.NewListenTCP(address)
 	if err != nil {
-		log.Fatalf("create a listener to send errors, listen to the address [%s] \n", err)
+		logger.Logger.Fatalf("create a listener to send errors, listen to the address: %s ", err)
 	}
-	log.Printf("listener succeeded,listen to the address [%s] \n", address)
+	logger.Logger.Infof("listener succeeded, listen to the address: %s ", address)
 	a.listener = listener
 }
 
 func parseExteriorConfig(configFile string) {
 	err := definition.ParseConfig(configFile)
 	if err != nil {
-		log.Fatalf("an error occurred in the configuration file parsing [%s] \n", err)
+		logger.Logger.Fatalf("an error occurred in the configuration file parsing [%s] ", err)
 	}
 }
 
 func loadInternalConfig(dispatcherHandler *web.DispatcherHandler) {
 	dispatcherHandler.AddHandler(handler.NewRoutePredicateHandlerMapping())
+}
+
+func printBanner() {
+	bytes, err := util.ReadConfigFile("config/banner.txt")
+	if err != nil {
+		logger.Logger.Errorf("loading programe banner err %s", err)
+	}
+	println(string(bytes))
 }

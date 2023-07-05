@@ -2,7 +2,7 @@ package global
 
 import (
 	"gateway/internal/filter"
-	util2 "gateway/internal/util"
+	"gateway/internal/util"
 	"gateway/internal/web"
 	"math"
 	"net/http/httputil"
@@ -13,7 +13,7 @@ type WebClientHttpRoutingFilter struct {
 }
 
 func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, chain filter.GatewayFilterChain) {
-	requestUrl := exchange.Attributes[util2.GatewayRequestUrlAttr]
+	requestUrl := exchange.Attributes[util.GatewayRequestUrlAttr]
 	reqUrl, ok := requestUrl.(string)
 	if !ok {
 		return
@@ -23,7 +23,7 @@ func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, cha
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(targetUrl)
-	proxy.ErrorLog = util2.NewHttpLogger()
+	proxy.ErrorLog = util.NewHttpLogger()
 	proxy.ServeHTTP(exchange.Write, exchange.Request)
 	chain.Filter(exchange)
 }

@@ -2,7 +2,7 @@ package locator
 
 import (
 	"gateway/internal/route"
-	"log"
+	"gateway/logger"
 )
 
 func NewCachingRouteLocator() *CachingRouteLocator {
@@ -11,7 +11,7 @@ func NewCachingRouteLocator() *CachingRouteLocator {
 	}
 	err := locator.fetch()
 	if err != nil {
-		log.Fatalf(" failed to initialize route loader")
+		logger.Logger.Fatalf(" failed to initialize route loader")
 	}
 	return locator
 }
