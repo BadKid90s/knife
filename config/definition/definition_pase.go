@@ -12,6 +12,11 @@ func ParseConfig(configFile string) error {
 		return err
 	}
 
+	err = ParseLoggerConfig(buffer)
+	if err != nil {
+		return errors.New("an error occurred while parsing the logger configuration")
+	}
+
 	err = ParseServerConfig(buffer)
 	if err != nil {
 		return errors.New("an error occurred while parsing the server configuration")
