@@ -15,6 +15,9 @@ import (
 )
 
 func NewApp(configFile string) *ProgramApp {
+	log.Printf("starting GatewayApplication")
+	startTime := time.Now()
+
 	//分发请求处理器
 	dispatcherHandler := web.DispatcherHandlerConstant
 
@@ -25,24 +28,22 @@ func NewApp(configFile string) *ProgramApp {
 	loadInternalConfig(dispatcherHandler)
 
 	return &ProgramApp{
-		handler: dispatcherHandler,
-		ip:      definition.GatewayServerDefinition.Ip,
-		port:    definition.GatewayServerDefinition.Port,
+		handler:   dispatcherHandler,
+		ip:        definition.GatewayServerDefinition.Ip,
+		port:      definition.GatewayServerDefinition.Port,
+		startTime: startTime,
 	}
 }
 
 type ProgramApp struct {
-	listener net.Listener
-	handler  *web.DispatcherHandler
-	port     int
-	ip       string
+	listener  net.Listener
+	handler   *web.DispatcherHandler
+	port      int
+	ip        string
+	startTime time.Time
 }
 
 func (a *ProgramApp) Start() {
-	log.Printf("starting GatewayApplication")
-
-	startTime := time.Now()
-
 	//创建监听
 	a.createListener()
 
@@ -54,8 +55,8 @@ func (a *ProgramApp) Start() {
 		IdleTimeout:       5 * time.Minute,
 		Handler:           a.handler,
 	}
-	elapsed := time.Since(startTime)
-	log.Printf("started GatewayApplication in %s seconds", elapsed)
+	elapsed := time.Since(a.startTime)
+	log.Printf("started GatewayApplication in %s", elapsed)
 
 	//监听服务
 	err := httpServer.Serve(a.listener)

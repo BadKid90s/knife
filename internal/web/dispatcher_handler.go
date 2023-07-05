@@ -3,6 +3,7 @@ package web
 import (
 	"log"
 	"net/http"
+	"time"
 )
 
 var DispatcherHandlerConstant = newDispatcherHandler()
@@ -25,6 +26,9 @@ func (h *DispatcherHandler) AddHandler(mapping HandlerMapping) {
 // write: 响应
 // request: 请求
 func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.Request) {
+	startTime := time.Now()
+	log.Printf("dispatcher handler received request. url [%s] \n", request.URL)
+
 	exchange := NewServerWebExchange(write, request)
 	for _, handlerMapping := range h.handlerMappings {
 		handler, err := handlerMapping.GetHandler(exchange)
@@ -36,6 +40,9 @@ func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.R
 			handler.Handle(exchange)
 		}
 	}
+
+	elapsed := time.Since(startTime)
+	log.Printf("dispatcher handler process sucess in %s", elapsed)
 }
 
 func createNotFoundError(exchange *ServerWebExchange) {

@@ -15,7 +15,6 @@ func (p *DefaultPredicate[T]) And(other Predicate[T]) Predicate[T] {
 }
 
 type AndPredicate[T any] struct {
-	DefaultPredicate[T]
 	Left  Predicate[T]
 	Right Predicate[T]
 }
@@ -29,4 +28,13 @@ func (p *AndPredicate[T]) Apply(t T) bool {
 		//如果是false,直接返回
 		return false
 	}()
+}
+func (p *AndPredicate[T]) And(other Predicate[T]) Predicate[T] {
+	return &AndPredicate[T]{
+		Left: p.Left,
+		Right: &AndPredicate[T]{
+			Left:  p.Right,
+			Right: other,
+		},
+	}
 }
