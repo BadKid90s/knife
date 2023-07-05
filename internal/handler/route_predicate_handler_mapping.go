@@ -12,13 +12,13 @@ import (
 func NewRoutePredicateHandlerMapping() *RoutePredicateHandlerMapping {
 	return &RoutePredicateHandlerMapping{
 		webHandler:    NewFilteringWebHandler(),
-		routerLocator: locator.NewDefinitionRouteLocator(),
+		routerLocator: locator.NewCachingRouteLocator(),
 	}
 }
 
 type RoutePredicateHandlerMapping struct {
 	webHandler    *FilteringWebHandler
-	routerLocator *locator.DefinitionRouteLocator
+	routerLocator locator.RouteLocator
 }
 
 func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web2.ServerWebExchange) (web2.Handler, error) {
