@@ -4,6 +4,7 @@ import (
 	"gateway/config/definition"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
+	"log"
 	"strings"
 )
 
@@ -43,12 +44,15 @@ type MethodPredicate[T any] struct {
 }
 
 func (p *MethodPredicate[T]) Apply(exchange *web.ServerWebExchange) bool {
+	var result = false
 	for _, method := range p.methods {
 		if method == exchange.Request.Method {
-			return true
+			result = true
+			break
 		}
 	}
-	return false
+	log.Printf("predicate apply success. result:[%t] id: [MethodPredicate] \n", result)
+	return result
 }
 
 // MethodPredicateConfig

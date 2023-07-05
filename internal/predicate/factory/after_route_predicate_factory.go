@@ -5,6 +5,7 @@ import (
 	"gateway/internal/predicate"
 	"gateway/internal/util"
 	"gateway/internal/web"
+	"log"
 	"time"
 )
 
@@ -42,7 +43,9 @@ type AfterPredicate[T any] struct {
 }
 
 func (p *AfterPredicate[T]) Apply(T) bool {
-	return time.Now().After(p.time)
+	result := time.Now().After(p.time)
+	log.Printf("predicate apply success. result:[%t] id: [AfterPredicate] \n", result)
+	return result
 }
 
 type AfterPredicateConfig struct {
