@@ -56,7 +56,7 @@ func (a *ProgramApp) Start() {
 		Handler:           a.handler,
 	}
 	elapsed := time.Since(a.startTime)
-	log.Printf("started GatewayApplication in %s seconds", elapsed)
+	log.Printf("started GatewayApplication in %s", elapsed)
 
 	//监听服务
 	err := httpServer.Serve(a.listener)
