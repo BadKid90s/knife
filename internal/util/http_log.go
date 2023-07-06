@@ -1,6 +1,7 @@
 package util
 
 import (
+	"gateway/logger"
 	"log"
 	"strings"
 )
@@ -13,7 +14,7 @@ func (*httpErrorLogWriter) Write(p []byte) (int, error) {
 	if !strings.HasPrefix(message, "http: TLS handshake error") &&
 		!strings.HasSuffix(message, ": EOF\n") &&
 		!strings.HasPrefix(message, "http: proxy error: context canceled") {
-		log.Printf(message)
+		logger.Logger.Errorf(strings.ReplaceAll(message, "\n", ""))
 	}
 	return len(p), nil
 }

@@ -4,7 +4,7 @@ import (
 	"gateway/config/definition"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
-	"log"
+	"gateway/logger"
 	"strings"
 )
 
@@ -51,7 +51,7 @@ func (p *MethodPredicate[T]) Apply(exchange *web.ServerWebExchange) bool {
 			break
 		}
 	}
-	log.Printf("predicate apply success. result:[%t] id: [MethodPredicate] \n", result)
+	logger.Logger.Debugf("predicate apply success. result: %t, id: MethodPredicate ", result)
 	return result
 }
 

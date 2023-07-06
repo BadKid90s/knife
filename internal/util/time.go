@@ -2,7 +2,7 @@ package util
 
 import (
 	"errors"
-	"log"
+	"gateway/logger"
 	"strings"
 	"time"
 )
@@ -11,7 +11,7 @@ func ParseTime(datetimeStr string) time.Time {
 	// 提取时区信息
 	zone, err := parseZone(datetimeStr)
 	if err != nil {
-		log.Fatalln("无法解析时区信息:", err)
+		logger.Logger.Fatalln("无法解析时区信息:", err)
 	}
 	// 解析字符串中的时间和时区
 	t := parseDatetime(datetimeStr)
@@ -26,7 +26,7 @@ func parseDatetime(dateStr string) time.Time {
 	str := dateStr[0:startIndex]
 	datetime, err := time.Parse("2006-01-02T15:04:05.999Z07:00", str)
 	if err != nil {
-		log.Fatalln("无法解析时间:", err)
+		logger.Logger.Fatalln("无法解析时间:", err)
 	}
 	return datetime
 }

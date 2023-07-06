@@ -6,7 +6,7 @@ import (
 	"gateway/internal/route"
 	"gateway/internal/util"
 	"gateway/internal/web"
-	"log"
+	"gateway/logger"
 	"sort"
 )
 
@@ -23,7 +23,7 @@ func (h *FilteringWebHandler) AddGlobalFilter(filter filter2.GatewayFilter) {
 }
 
 func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
-	log.Printf("filtering handler uri [%s] \n", exchange.Request.URL.Path)
+	logger.Logger.Debugf("start process filtering handler uri %s ", exchange.Request.URL.Path)
 
 	r := exchange.Attributes[util.GatewayRouteAttr]
 	gr, ok := r.(*route.Route)
