@@ -60,7 +60,7 @@ type BetweenPredicate[T any] struct {
 func (p *BetweenPredicate[T]) Apply(T) bool {
 	now := time.Now()
 	result := now.After(p.startTime) && now.Before(p.endTime)
-	logger.Logger.Debugf("predicate apply success. result: %t, id: BetweenPredicate ", result)
+	logger.Logger.Debugf("predicate apply success. result: %t,  id: BetweenPredicate ", result)
 	return result
 }
 
