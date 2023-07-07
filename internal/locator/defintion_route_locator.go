@@ -63,7 +63,7 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.P
 		}
 		p = p.And(found)
 	}
-	logger.Logger.Debugf("completed loading routing predicates ")
+	logger.Logger.Debugf("completed loading routing predicates，total: %d", len(predicates))
 	return p, nil
 }
 
@@ -85,6 +85,6 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 }
 func getFilters(_ *definition.RouteDefinition) ([]filter.GatewayFilter, error) {
 	var fs = make([]filter.GatewayFilter, 0)
-	logger.Logger.Debugf("completed loading routing filter, filter-size: %d ", len(fs))
+	logger.Logger.Debugf("completed loading routing filter, total: %d ", len(fs))
 	return fs, nil
 }

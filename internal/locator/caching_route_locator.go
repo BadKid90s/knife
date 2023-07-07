@@ -11,7 +11,7 @@ func NewCachingRouteLocator() *CachingRouteLocator {
 	}
 	err := locator.fetch()
 	if err != nil {
-		logger.Logger.Fatalf(" failed to initialize route loader")
+		logger.Logger.Fatalf("failed to initialize route loader, %s", err)
 	}
 	return locator
 }
