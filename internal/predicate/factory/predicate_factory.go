@@ -15,6 +15,7 @@ var PredicateFactories = map[string]RoutePredicateFactory{
 	"After":   &AfterRoutePredicateFactory{},
 	"Before":  &BeforeRoutePredicateFactory{},
 	"Between": &BetweenRoutePredicateFactory{},
+	"Cookie":  &CookieRoutePredicateFactory{},
 }
 
 func getArgs(definition *definition.PredicateDefinition) []string {

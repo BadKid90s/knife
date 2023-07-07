@@ -17,7 +17,11 @@ routes:
       - name: Between
         args:
           pattern1: 2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
-          pattern2: 2023-06-27T14:30:00.000+08:00[Asia/Shanghai]
+          pattern2: 2023-07-27T14:30:00.000+08:00[Asia/Shanghai]
+      - name: Cookie
+        args:
+          pattern1: chocolate
+          pattern2: 123
 
 logger:
   level: debug
