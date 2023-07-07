@@ -2,7 +2,6 @@ package web
 
 import (
 	"gateway/logger"
-	"log"
 	"net/http"
 	"time"
 )
@@ -34,7 +33,8 @@ func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.R
 	for _, handlerMapping := range h.handlerMappings {
 		handler, err := handlerMapping.GetHandler(exchange)
 		if err != nil {
-			log.Printf(err.Error())
+			logger.Logger.Errorf(err.Error())
+			createOtherError(exchange, err.Error())
 		} else if handler == nil {
 			createNotFoundError(exchange)
 		} else {
@@ -48,4 +48,7 @@ func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.R
 
 func createNotFoundError(exchange *ServerWebExchange) {
 	http.NotFound(exchange.Write, exchange.Request)
+}
+func createOtherError(exchange *ServerWebExchange, msg string) {
+	http.Error(exchange.Write, msg, 500)
 }
