@@ -28,11 +28,17 @@ func (f *BetweenRoutePredicateFactory) parseConfig(definition *definition.Predic
 	if len(args) != 2 {
 		return errors.New("need two datetime type params for betweenRoutePredicate")
 	}
-	startTime := util.ParseTime(args[0])
-	endTime := util.ParseTime(args[1])
+	startTime, err := util.ParseTime(args[0])
+	if err != nil {
+		return err
+	}
+	endTime, err := util.ParseTime(args[1])
+	if err != nil {
+		return err
+	}
 	f.config = &BetweenPredicateConfig{
-		startTime: startTime,
-		endTime:   endTime,
+		startTime: *startTime,
+		endTime:   *endTime,
 	}
 	return nil
 }
