@@ -16,6 +16,7 @@ var PredicateFactories = map[string]RoutePredicateFactory{
 	"Between": &BetweenRoutePredicateFactory{},
 	"Cookie":  &CookieRoutePredicateFactory{},
 	"Header":  &HeaderRoutePredicateFactory{},
+	"Host":    &HostRoutePredicateFactory{},
 	"Method":  &MethodRoutePredicateFactory{},
 }
 

@@ -26,6 +26,9 @@ routes:
         args:
           pattern1: auth
           pattern2: \d+
+      - name: Host
+        args:
+          pattern: "wangruiyudeMacBook-Pro.**"
 
 logger:
   level: debug
