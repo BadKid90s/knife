@@ -10,5 +10,6 @@ routes:
       - Before=2023-07-26T14:30:00.000+08:00[Asia/Shanghai]
       - Between=2023-06-26T14:30:00.000+08:00[Asia/Shanghai],2023-07-26T14:30:00.000+08:00[Asia/Shanghai]
       - Cookie=chocolate,123
+      - Header=auth,\d+
 logger:
   level: debug
