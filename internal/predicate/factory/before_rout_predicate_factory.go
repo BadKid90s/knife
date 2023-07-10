@@ -24,9 +24,12 @@ func (f *BeforeRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 }
 func (f *BeforeRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
 	args := getArgs(definition)
-	t := util.ParseTime(args[0])
+	t, err := util.ParseTime(args[0])
+	if err != nil {
+		return err
+	}
 	f.config = &BeforePredicateConfig{
-		time: t,
+		time: *t,
 	}
 	return nil
 }

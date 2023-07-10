@@ -11,9 +11,13 @@ type RoutePredicateFactory interface {
 }
 
 var PredicateFactories = map[string]RoutePredicateFactory{
-	"Method": &MethodRoutePredicateFactory{},
-	"After":  &AfterRoutePredicateFactory{},
-	"Before": &BeforeRoutePredicateFactory{},
+	"After":   &AfterRoutePredicateFactory{},
+	"Before":  &BeforeRoutePredicateFactory{},
+	"Between": &BetweenRoutePredicateFactory{},
+	"Cookie":  &CookieRoutePredicateFactory{},
+	"Header":  &HeaderRoutePredicateFactory{},
+	"Host":    &HostRoutePredicateFactory{},
+	"Method":  &MethodRoutePredicateFactory{},
 }
 
 func getArgs(definition *definition.PredicateDefinition) []string {
