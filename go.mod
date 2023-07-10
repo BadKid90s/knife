@@ -10,6 +10,7 @@ require (
 require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/vibrantbyte/go-antpath v1.1.1 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
