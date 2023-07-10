@@ -51,7 +51,7 @@ func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition.Rout
 
 // 组合谓词
 func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
-	predicates := routeDefinition.Predicates
+	predicates := routeDefinition.PredicateDefinitions
 	p, err := lookup(routeDefinition, predicates[0])
 	if err != nil {
 		return nil, err
