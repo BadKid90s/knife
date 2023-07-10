@@ -13,6 +13,10 @@ func ParseRouteConfig(buffer []byte) error {
 		return err
 	}
 
-	RouteDefinitions = config.Routes
+	routes := config.Routes
+	for _, route := range routes {
+		route.SetPredicateDefinitions()
+	}
+	RouteDefinitions = routes
 	return nil
 }

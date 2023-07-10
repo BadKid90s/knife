@@ -21,9 +21,5 @@ var PredicateFactories = map[string]RoutePredicateFactory{
 }
 
 func getArgs(definition *definition.PredicateDefinition) []string {
-	args := make([]string, 0)
-	for _, value := range definition.Args {
-		args = append(args, value)
-	}
-	return args
+	return definition.Args
 }

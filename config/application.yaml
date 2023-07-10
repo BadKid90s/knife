@@ -5,30 +5,8 @@ routes:
     uri: http://localhost:8080
     order: 1
     predicates:
-      - name: Method
-        args:
-          pattern: GET,POST
-      - name: After
-        args:
-          pattern: 2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
-      - name: Before
-        args:
-          pattern: 2023-07-26T14:30:00.000+08:00[Asia/Shanghai]
-      - name: Between
-        args:
-          pattern1: 2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
-          pattern2: 2023-07-27T14:30:00.000+08:00[Asia/Shanghai]
-      - name: Cookie
-        args:
-          pattern1: chocolate
-          pattern2: 123
-      - name: Header
-        args:
-          pattern1: auth
-          pattern2: \d+
-      - name: Host
-        args:
-          pattern: "wangruiyudeMacBook-Pro.**"
-
+      - Method=GET,POST
+      - After=2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
+      - Before=2023-07-26T14:30:00.000+08:00[Asia/Shanghai]
 logger:
   level: debug
