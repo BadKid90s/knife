@@ -5,7 +5,6 @@ import (
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"gateway/logger"
-	"strings"
 )
 
 type MethodRoutePredicateFactory struct {
@@ -23,9 +22,8 @@ func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 }
 func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
 	args := getArgs(definition)
-	methods := strings.Split(args[0], ",")
 	f.config = &MethodPredicateConfig{
-		methods: methods,
+		methods: args,
 	}
 	return nil
 }
