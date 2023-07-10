@@ -22,6 +22,10 @@ routes:
         args:
           pattern1: chocolate
           pattern2: 123
+      - name: Header
+        args:
+          pattern1: auth
+          pattern2: \d+
 
 logger:
   level: debug
