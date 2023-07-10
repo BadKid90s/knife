@@ -54,9 +54,9 @@ func (p *CookiePredicate[T]) Apply(exchange *web.ServerWebExchange) bool {
 	cookie, err := exchange.Request.Cookie(p.key)
 	if err != nil {
 		logger.Logger.Debugf("cookiePredicate need name is %s param, but not found ", p.key)
-		return false
+	} else {
+		result = regexp.MustCompile(p.value).MatchString(cookie.Value)
 	}
-	result = regexp.MustCompile(p.value).MatchString(cookie.Value)
 	logger.Logger.Debugf("predicate apply success. result: %t, id: CookiePredicate ", result)
 	return result
 }
