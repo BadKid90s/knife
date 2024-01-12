@@ -5,8 +5,6 @@ import (
 	"gateway/internal/util"
 	"gateway/internal/web"
 	"math"
-	"net/http/httputil"
-	"net/url"
 )
 
 type WebClientHttpRoutingFilter struct {
@@ -18,13 +16,7 @@ func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, cha
 	if !ok {
 		return
 	}
-	targetUrl, err := url.Parse(reqUrl)
-	if err != nil {
-		return
-	}
-	proxy := httputil.NewSingleHostReverseProxy(targetUrl)
-	proxy.ErrorLog = util.NewHttpLogger()
-	proxy.ServeHTTP(exchange.Write, exchange.Request)
+	util.ServeReverseProxy(reqUrl, exchange.Write, exchange.Request)
 	chain.Filter(exchange)
 }
 
