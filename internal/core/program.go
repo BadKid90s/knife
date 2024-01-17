@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// GatewayApp 创建程序
 func GatewayApp() *ProgramApp {
 	return &ProgramApp{
 		configuration: config.DefaultGateWayConfiguration(),
@@ -23,10 +24,14 @@ type ProgramApp struct {
 	listener       net.Listener
 }
 
+// SetConfigFilePath 设置配置文件路径
+// 如果设置了就使用自定义的配置否则使用默认的配置
+// 默认的配置： config.DefaultGateWayConfiguration
 func (a *ProgramApp) SetConfigFilePath(filepath string) {
 	a.configFilePath = &filepath
 }
 
+// Start 启动程序
 func (a *ProgramApp) Start() {
 
 	startTime := time.Now()
@@ -66,6 +71,7 @@ func (a *ProgramApp) Start() {
 	}
 }
 
+// Stop 停止程序
 func (a *ProgramApp) Stop() error {
 	if a.listener != nil {
 		err := a.listener.Close()
@@ -74,6 +80,7 @@ func (a *ProgramApp) Stop() error {
 	return nil
 }
 
+// 打印banner
 func printBanner() {
 	bytes, err := util.ReadConfigFile("config/banner.txt")
 	if err != nil {
