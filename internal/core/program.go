@@ -1,56 +1,49 @@
 package core
 
 import (
-	"fmt"
-	"gateway/config/definition"
-	"gateway/internal/filter"
-	"gateway/internal/filter/global"
+	"gateway/internal/config"
 	"gateway/internal/handler"
 	"gateway/internal/network"
 	"gateway/internal/util"
-	"gateway/internal/web"
 	"gateway/logger"
 	"net"
 	"net/http"
 	"time"
 )
 
-func NewApp(configFile string) *ProgramApp {
-	startTime := time.Now()
-
-	//打印 banner
-	printBanner()
-
-	//解析外部配置
-	parseExteriorConfig(configFile)
-
-	logger.Logger.Infof("starting GatewayApplication")
-
-	//分发请求处理器
-	dispatcherHandler := web.DispatcherHandlerConstant
-
-	//加载内部配置
-	loadInternalConfig(dispatcherHandler)
-
+func GatewayApp() *ProgramApp {
 	return &ProgramApp{
-		handler:   dispatcherHandler,
-		ip:        definition.GatewayServerDefinition.Ip,
-		port:      definition.GatewayServerDefinition.Port,
-		startTime: startTime,
+		configuration: config.DefaultGateWayConfiguration(),
 	}
 }
 
 type ProgramApp struct {
-	listener  net.Listener
-	handler   *web.DispatcherHandler
-	port      int
-	ip        string
-	startTime time.Time
+	configFilePath *string
+	configuration  *config.GateWayConfiguration
+	listener       net.Listener
+}
+
+func (a *ProgramApp) SetConfigFilePath(filepath string) {
+	a.configFilePath = &filepath
 }
 
 func (a *ProgramApp) Start() {
-	//创建监听
-	a.createListener()
+
+	startTime := time.Now()
+
+	logger.NewLogger(a.configuration.Logger.Level)
+
+	//打印 banner
+	printBanner()
+
+	logger.Logger.Infof("starting GatewayApplication")
+	//如果指定了配置文件使用指定的配置
+	if a.configFilePath != nil {
+		logger.Logger.Infof("loading GateWayConfiguration for %s", *a.configFilePath)
+		a.configuration = config.NewGateWayConfiguration(a.configFilePath)
+	} else {
+		logger.Logger.Infof("use Default GateWayConfiguration")
+	}
 
 	//使用核心中间件来服务http
 	httpServer := &http.Server{
@@ -58,10 +51,13 @@ func (a *ProgramApp) Start() {
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      2 * time.Minute,
 		IdleTimeout:       5 * time.Minute,
-		Handler:           a.handler,
+		Handler:           handler.DispatcherHandlerConstant,
 	}
-	elapsed := time.Since(a.startTime)
+	elapsed := time.Since(startTime)
 	logger.Logger.Infof("started GatewayApplication in %s", elapsed)
+
+	//创建监听
+	a.listener = network.NewListenForIpPort(a.configuration.Server.Ip, a.configuration.Server.Port)
 
 	//监听服务
 	err := httpServer.Serve(a.listener)
@@ -76,31 +72,6 @@ func (a *ProgramApp) Stop() error {
 		return err
 	}
 	return nil
-}
-
-func (a *ProgramApp) Use(filter filter.GatewayFilter) {
-	global.Filters = append(global.Filters, filter)
-}
-
-func (a *ProgramApp) createListener() {
-	address := fmt.Sprintf("%s:%d", a.ip, a.port)
-	listener, err := network.NewListenTCP(address)
-	if err != nil {
-		logger.Logger.Fatalf("create a listener to send errors, listen to the address: %s ", err)
-	}
-	logger.Logger.Infof("listener succeeded, listen to the address: %s ", address)
-	a.listener = listener
-}
-
-func parseExteriorConfig(configFile string) {
-	err := definition.ParseConfig(configFile)
-	if err != nil {
-		logger.Logger.Fatalf("an error occurred in the configuration file parsing [%s] ", err)
-	}
-}
-
-func loadInternalConfig(dispatcherHandler *web.DispatcherHandler) {
-	dispatcherHandler.AddHandler(handler.NewRoutePredicateHandlerMapping())
 }
 
 func printBanner() {

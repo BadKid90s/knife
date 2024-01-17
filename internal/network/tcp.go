@@ -1,12 +1,14 @@
 package network
 
 import (
+	"fmt"
+	"gateway/logger"
 	"net"
 	"time"
 )
 
-// NewListenTCP 建立TCP连接
-func NewListenTCP(address string) (net.Listener, error) {
+// NewListenForAddress 建立TCP连接
+func NewListenForAddress(address string) (net.Listener, error) {
 	underlying, err := net.Listen("tcp", address)
 	if err != nil {
 		return nil, err
@@ -15,6 +17,16 @@ func NewListenTCP(address string) (net.Listener, error) {
 		Listener: underlying,
 		denyTTL:  5 * time.Minute,
 	}, nil
+}
+
+func NewListenForIpPort(ip string, port int) net.Listener {
+	address := fmt.Sprintf("%s:%d", ip, port)
+	listener, err := NewListenForAddress(address)
+	if err != nil {
+		logger.Logger.Fatalf("create a listener to send errors, listen to the address: %s ", err)
+	}
+	logger.Logger.Infof("listener succeeded, listen to the address: %s ", address)
+	return listener
 }
 
 type TCPListener struct {

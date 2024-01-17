@@ -52,19 +52,25 @@ func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition.Rout
 // 组合谓词
 func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
 	predicates := routeDefinition.PredicateDefinitions
-	p, err := lookup(routeDefinition, predicates[0])
-	if err != nil {
-		return nil, err
-	}
-	for _, andPredicate := range predicates[1:] {
-		found, err := lookup(routeDefinition, andPredicate)
+	if len(predicates) > 0 {
+		p, err := lookup(routeDefinition, predicates[0])
 		if err != nil {
 			return nil, err
 		}
-		p = p.And(found)
+		for _, andPredicate := range predicates[1:] {
+			found, err := lookup(routeDefinition, andPredicate)
+			if err != nil {
+				return nil, err
+			}
+			p = &predicate.AndPredicate[*web.ServerWebExchange]{
+				Left:  p,
+				Right: found,
+			}
+		}
+		logger.Logger.Debugf("completed loading routing predicates，total: %d", len(predicates))
+		return p, nil
 	}
-	logger.Logger.Debugf("completed loading routing predicates，total: %d", len(predicates))
-	return p, nil
+	return &predicate.NullableDefaultPredicate[*web.ServerWebExchange]{}, nil
 }
 
 func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
@@ -79,10 +85,9 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 	if apply == nil {
 		return nil, fmt.Errorf("an error occurred in building Predicate [%s] ", predicateDefinition.Name)
 	}
-	return &predicate.DefaultPredicate[*web.ServerWebExchange]{
-		Delegate: apply,
-	}, nil
+	return apply, nil
 }
+
 func getFilters(_ *definition.RouteDefinition) ([]filter.GatewayFilter, error) {
 	var fs = make([]filter.GatewayFilter, 0)
 	logger.Logger.Debugf("completed loading routing filter, total: %d ", len(fs))

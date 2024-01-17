@@ -7,11 +7,20 @@ type DefaultPredicate[T any] struct {
 func (p *DefaultPredicate[T]) Apply(t T) bool {
 	return p.Delegate.Apply(t)
 }
+
 func (p *DefaultPredicate[T]) And(other Predicate[T]) Predicate[T] {
 	return &AndPredicate[T]{
 		Left:  p,
 		Right: other,
 	}
+}
+
+type NullableDefaultPredicate[T any] struct {
+	Delegate Predicate[T]
+}
+
+func (p *NullableDefaultPredicate[T]) Apply(_ T) bool {
+	return true
 }
 
 type AndPredicate[T any] struct {

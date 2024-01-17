@@ -6,10 +6,8 @@ import (
 
 func main() {
 
-	var configFile = "config/application.yaml"
-
-	app := core.NewApp(configFile)
-
+	app := core.GatewayApp()
+	//app.SetConfigFilePath("config/application.yml")
 	app.Start()
 
 }

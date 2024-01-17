@@ -21,7 +21,7 @@ type RoutePredicateHandlerMapping struct {
 	routerLocator locator.RouteLocator
 }
 
-func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web2.ServerWebExchange) (web2.Handler, error) {
+func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web2.ServerWebExchange) (Handler, error) {
 	handler, err := r.getHandlerInternal(exchange)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (r *RoutePredicateHandlerMapping) GetHandler(exchange *web2.ServerWebExchan
 	return handler, nil
 }
 
-func (r RoutePredicateHandlerMapping) getHandlerInternal(exchange *web2.ServerWebExchange) (web2.Handler, error) {
+func (r RoutePredicateHandlerMapping) getHandlerInternal(exchange *web2.ServerWebExchange) (Handler, error) {
 	//处理路由信息
 	gatewayRoute, err := r.lookupRoute(exchange)
 	if err != nil {
