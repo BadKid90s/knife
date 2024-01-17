@@ -14,14 +14,40 @@ type GatewayFilter interface {
 	Filter
 }
 
-var GatewayFilters []GatewayFilter
-var GlobalFilters []GlobalFilter
-
 type Constructor func(exchange *web.ServerWebExchange, chain Chain)
 
 func (m Constructor) Filter(exchange *web.ServerWebExchange, chain Chain) {
 	m(exchange, chain)
 }
-func AddGlobalFilter(order int16, filter Filter) {
-	GlobalFilters = append(GlobalFilters, filter)
+
+var GlobalFilters filtersDomain
+
+func AddGlobalFilter(name string, order int16, filter Filter) {
+	f := Info{
+		order:  order,
+		Name:   name,
+		Filter: filter,
+	}
+	GlobalFilters.Filters = append(GlobalFilters.Filters, f)
+}
+
+var GatewayFilters filtersDomain
+
+func AddGatewayFilters(name string, order int16, filter Filter) {
+	f := Info{
+		order:  order,
+		Name:   name,
+		Filter: filter,
+	}
+	GatewayFilters.Filters = append(GatewayFilters.Filters, f)
+}
+
+type filtersDomain struct {
+	Filters []Info
+}
+
+type Info struct {
+	Name   string
+	Filter Filter
+	order  int16
 }

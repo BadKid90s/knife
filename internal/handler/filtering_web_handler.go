@@ -6,28 +6,30 @@ import (
 	"gateway/logger"
 )
 
-func NewFilteringWebHandler(globalFilters []filter.GlobalFilter, gatewayFilters []filter.GatewayFilter) *FilteringWebHandler {
-	filters := make([]filter.Filter, 0, len(globalFilters)+len(gatewayFilters))
-
-	for _, f := range globalFilters {
-		filters = append(filters, f)
-	}
-
-	for _, f := range gatewayFilters {
-		filters = append(filters, f)
-	}
+func NewFilteringWebHandler(globalFilters []filter.Info, gatewayFilters []filter.Info) *FilteringWebHandler {
 
 	return &FilteringWebHandler{
-		filters: filters,
+		globalFilters:  globalFilters,
+		gatewayFilters: gatewayFilters,
 	}
 }
 
 type FilteringWebHandler struct {
-	filters []filter.Filter
+	globalFilters  []filter.Info
+	gatewayFilters []filter.Info
 }
 
 func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 	logger.Logger.Debugf("start process filtering handler uri %s ", exchange.Request.URL.Path)
 
-	filter.NewDefaultGatewayFilterChain(h.filters).Filter(exchange)
+	var filters []filter.Filter
+	for _, globalFilter := range h.globalFilters {
+		filters = append(filters, globalFilter.Filter)
+	}
+
+	for _, gatewayFilter := range h.gatewayFilters {
+		filters = append(filters, gatewayFilter.Filter)
+	}
+
+	filter.NewDefaultGatewayFilterChain(filters).Filter(exchange)
 }

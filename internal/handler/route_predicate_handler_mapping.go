@@ -12,7 +12,7 @@ import (
 
 func NewRoutePredicateHandlerMapping() *RoutePredicateHandlerMapping {
 	return &RoutePredicateHandlerMapping{
-		filterWebHandler: NewFilteringWebHandler(filter.GlobalFilters, filter.GatewayFilters),
+		filterWebHandler: NewFilteringWebHandler(filter.GlobalFilters.Filters, filter.GatewayFilters.Filters),
 		routerLocator:    locator.NewCachingRouteLocator(),
 	}
 }
