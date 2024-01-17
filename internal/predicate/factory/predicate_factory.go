@@ -1,13 +1,13 @@
 package factory
 
 import (
-	"gateway/internal/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 )
 
 type RoutePredicateFactory interface {
-	Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error)
+	Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error)
 }
 
 var PredicateFactories = map[string]RoutePredicateFactory{
@@ -20,6 +20,6 @@ var PredicateFactories = map[string]RoutePredicateFactory{
 	"Method":  &MethodRoutePredicateFactory{},
 }
 
-func getArgs(definition *definition.PredicateDefinition) []string {
+func getArgs(definition *config.PredicateConfiguration) []string {
 	return definition.Args
 }

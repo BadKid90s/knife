@@ -5,7 +5,6 @@ import (
 )
 
 func main() {
-
 	app := core.GatewayApp()
 	app.SetConfigFilePath("config/application.yaml")
 	app.Start()

@@ -7,22 +7,24 @@ import (
 	"gateway/logger"
 )
 
-// GateWayConfiguration 程序配置
-type GateWayConfiguration struct {
+var GlobalGatewayConfiguration *GatewayConfiguration
+
+// GatewayConfiguration 程序配置
+type GatewayConfiguration struct {
 	//服务
 	Server *ServerConfiguration
 	//日志
 	Logger *LoggerConfiguration
 	//路由
-	Routes []*RouteConfiguration
+	Router *GatewayRoutesConfiguration
 }
 
 // DefaultGateWayConfiguration 默认的程序配置
 // 服务端口：8080
 // 日志级别：info
 // 路由：无
-func DefaultGateWayConfiguration() *GateWayConfiguration {
-	return &GateWayConfiguration{
+func defaultGateWayConfiguration() *GatewayConfiguration {
+	return &GatewayConfiguration{
 		Server: &ServerConfiguration{
 			Ip:   "0.0.0.0",
 			Port: 8080,
@@ -30,20 +32,32 @@ func DefaultGateWayConfiguration() *GateWayConfiguration {
 		Logger: &LoggerConfiguration{
 			Level: "info",
 		},
-		Routes: make([]*RouteConfiguration, 0),
+		Router: &GatewayRoutesConfiguration{
+			Routes: make([]*RouteConfiguration, 0),
+		},
 	}
 }
 
-func NewGateWayConfiguration(filepath *string) *GateWayConfiguration {
-	configuration := DefaultGateWayConfiguration()
-	err := parseConfig(filepath, configuration)
-	if err != nil {
-		logger.Logger.Fatalf("parse config failed，err:%s ", err)
+func NewGatewayConfiguration(filepath *string) {
+
+	configuration := defaultGateWayConfiguration()
+
+	//如果指定了配置文件使用指定的配置
+	if filepath != nil {
+		err := parseConfig(filepath, configuration)
+		logger.NewLogger(configuration.Logger.Level)
+		logger.Logger.Infof("loading gateWayConfiguration for %s", *filepath)
+		if err != nil {
+			logger.Logger.Fatalf("parse config failed，err:%s ", err)
+		}
+	} else {
+		logger.NewLogger(configuration.Logger.Level)
+		logger.Logger.Infof("use default gateWayConfiguration")
 	}
-	return configuration
+	GlobalGatewayConfiguration = configuration
 }
 
-func parseConfig(configFile *string, configuration *GateWayConfiguration) error {
+func parseConfig(configFile *string, configuration *GatewayConfiguration) error {
 
 	buffer, err := util.ReadConfigFile(*configFile)
 	if err != nil {
@@ -88,7 +102,7 @@ func parseConfig(configFile *string, configuration *GateWayConfiguration) error 
 			PredicateConfiguration: predicates,
 		}
 	}
-	configuration.Routes = routes
+	configuration.Router.Routes = routes
 
 	return nil
 

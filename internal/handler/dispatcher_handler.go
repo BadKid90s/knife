@@ -7,9 +7,7 @@ import (
 	"time"
 )
 
-var DispatcherHandlerConstant = newDispatcherHandler()
-
-func newDispatcherHandler() *DispatcherHandler {
+func NewDispatcherHandler() *DispatcherHandler {
 	return &DispatcherHandler{
 		handlerMappings: []HandlerMapping{NewRoutePredicateHandlerMapping()},
 	}

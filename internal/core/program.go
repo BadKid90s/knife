@@ -1,10 +1,10 @@
 package core
 
 import (
+	"fmt"
 	"gateway/internal/config"
 	"gateway/internal/handler"
 	"gateway/internal/network"
-	"gateway/internal/util"
 	"gateway/logger"
 	"net"
 	"net/http"
@@ -13,14 +13,11 @@ import (
 
 // GatewayApp 创建程序
 func GatewayApp() *ProgramApp {
-	return &ProgramApp{
-		configuration: config.DefaultGateWayConfiguration(),
-	}
+	return &ProgramApp{}
 }
 
 type ProgramApp struct {
 	configFilePath *string
-	configuration  *config.GateWayConfiguration
 	listener       net.Listener
 }
 
@@ -36,39 +33,20 @@ func (a *ProgramApp) Start() {
 
 	startTime := time.Now()
 
-	logger.NewLogger(a.configuration.Logger.Level)
-
 	//打印 banner
 	printBanner()
 
-	logger.Logger.Infof("starting gatewayApplication")
-	//如果指定了配置文件使用指定的配置
-	if a.configFilePath != nil {
-		logger.Logger.Infof("loading gateWayConfiguration for %s", *a.configFilePath)
-		a.configuration = config.NewGateWayConfiguration(a.configFilePath)
-	} else {
-		logger.Logger.Infof("use default gateWayConfiguration")
-	}
+	config.NewGatewayConfiguration(a.configFilePath)
 
-	//使用核心中间件来服务http
-	httpServer := &http.Server{
-		ReadHeaderTimeout: 10 * time.Second,
-		ReadTimeout:       30 * time.Second,
-		WriteTimeout:      2 * time.Minute,
-		IdleTimeout:       5 * time.Minute,
-		Handler:           handler.DispatcherHandlerConstant,
-	}
+	//创建监听
+	ip := config.GlobalGatewayConfiguration.Server.Ip
+	port := config.GlobalGatewayConfiguration.Server.Port
+	a.listener = network.NewListenForIpPort(ip, port)
+
 	elapsed := time.Since(startTime)
 	logger.Logger.Infof("started gatewayApplication in %s", elapsed)
 
-	//创建监听
-	a.listener = network.NewListenForIpPort(a.configuration.Server.Ip, a.configuration.Server.Port)
-
-	//监听服务
-	err := httpServer.Serve(a.listener)
-	if err != nil {
-		logger.Logger.Infof("app runing err %s", err)
-	}
+	run(a.listener)
 }
 
 // Stop 停止程序
@@ -82,9 +60,27 @@ func (a *ProgramApp) Stop() error {
 
 // 打印banner
 func printBanner() {
-	bytes, err := util.ReadConfigFile("config/banner.txt")
-	if err != nil {
-		logger.Logger.Errorf("loading programe banner err %s", err)
+	fmt.Println("____       _                           ")
+	fmt.Println("/ ___| __ _| |_ _____      ____ _ _   _")
+	fmt.Println("| |  _ / _` | __/ _ \\ \\ / / _` | | | |")
+	fmt.Println("| |_| | (_| | ||  __/\\ V  V / (_| | |_| |")
+	fmt.Println("\\____|\\__,_|\\__\\___| \\_/\\_/ \\__,_|\\__, |")
+	fmt.Println("                                    |___/")
+}
+
+func run(listener net.Listener) {
+	//使用核心中间件来服务http
+	httpServer := &http.Server{
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      2 * time.Minute,
+		IdleTimeout:       5 * time.Minute,
+		Handler:           handler.NewDispatcherHandler(),
 	}
-	println(string(bytes))
+	//监听服务
+	err := httpServer.Serve(listener)
+
+	if err != nil {
+		logger.Logger.Infof("app runing err %s", err)
+	}
 }

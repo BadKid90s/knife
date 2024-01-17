@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"gateway/internal/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/util"
 	"gateway/internal/web"
@@ -13,7 +13,7 @@ type BeforeRoutePredicateFactory struct {
 	config *BeforePredicateConfig
 }
 
-func (f *BeforeRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *BeforeRoutePredicateFactory) Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (f *BeforeRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 	return f.apply(), nil
 
 }
-func (f *BeforeRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+func (f *BeforeRoutePredicateFactory) parseConfig(definition *config.PredicateConfiguration) error {
 	args := getArgs(definition)
 	t, err := util.ParseTime(args[0])
 	if err != nil {

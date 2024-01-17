@@ -4,13 +4,12 @@ import (
 	"gateway/internal/filter"
 	"gateway/internal/util"
 	"gateway/internal/web"
-	"math"
 )
 
 type WebClientHttpRoutingFilter struct {
 }
 
-func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, chain filter.GatewayFilterChain) {
+func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, chain filter.Chain) {
 	requestUrl := exchange.Attributes[util.GatewayRequestUrlAttr]
 	reqUrl, ok := requestUrl.(string)
 	if !ok {
@@ -20,6 +19,6 @@ func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, cha
 	chain.Filter(exchange)
 }
 
-func (f *WebClientHttpRoutingFilter) GetOrder() int {
-	return math.MinInt16
+func init() {
+	filter.AddGlobalFilter(1, &WebClientHttpRoutingFilter{})
 }

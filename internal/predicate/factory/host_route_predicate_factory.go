@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"gateway/internal/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"gateway/logger"
@@ -13,7 +13,7 @@ type HostRoutePredicateFactory struct {
 	config *HostPredicateConfig
 }
 
-func (f *HostRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *HostRoutePredicateFactory) Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (f *HostRoutePredicateFactory) Apply(definition *definition.PredicateDefini
 	return f.apply(), nil
 
 }
-func (f *HostRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+func (f *HostRoutePredicateFactory) parseConfig(definition *config.PredicateConfiguration) error {
 	args := getArgs(definition)
 	var hosts = make([]string, 0)
 	for _, item := range args {
