@@ -2,7 +2,7 @@ package factory
 
 import (
 	"errors"
-	"gateway/config/definition"
+	"gateway/internal/config/definition"
 	"gateway/internal/predicate"
 	"gateway/internal/util"
 	"gateway/internal/web"

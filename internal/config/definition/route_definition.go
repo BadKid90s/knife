@@ -2,6 +2,7 @@ package definition
 
 import (
 	"gateway/logger"
+	"gopkg.in/yaml.v2"
 	"strings"
 )
 
@@ -15,6 +16,11 @@ type RouteDefinition struct {
 	Order                string   `yaml:"order"`
 	Predicates           []string `yaml:"predicates"`
 	PredicateDefinitions []*PredicateDefinition
+}
+
+type PredicateDefinition struct {
+	Name string
+	Args []string
 }
 
 func (r *RouteDefinition) SetPredicateDefinitions() {
@@ -31,4 +37,21 @@ func (r *RouteDefinition) SetPredicateDefinitions() {
 		press = append(press, predicate)
 	}
 	r.PredicateDefinitions = press
+}
+
+var RouteDefinitions = make([]*RouteDefinition, 0)
+
+func ParseRouteConfig(buffer []byte) (*GatewayRoutesDefinition, error) {
+	config := &GatewayRoutesDefinition{}
+	err := yaml.Unmarshal(buffer, config)
+	if err != nil {
+		return nil, err
+	}
+
+	routes := config.Routes
+	for _, route := range routes {
+		route.SetPredicateDefinitions()
+	}
+	RouteDefinitions = routes
+	return config, nil
 }

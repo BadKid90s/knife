@@ -7,7 +7,7 @@ import (
 func main() {
 
 	app := core.GatewayApp()
-	//app.SetConfigFilePath("config/application.yml")
+	app.SetConfigFilePath("config/application.yaml")
 	app.Start()
 
 }

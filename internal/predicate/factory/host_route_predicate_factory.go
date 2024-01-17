@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"gateway/config/definition"
+	"gateway/internal/config/definition"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"gateway/logger"

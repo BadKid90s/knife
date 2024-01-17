@@ -41,13 +41,13 @@ func (a *ProgramApp) Start() {
 	//打印 banner
 	printBanner()
 
-	logger.Logger.Infof("starting GatewayApplication")
+	logger.Logger.Infof("starting gatewayApplication")
 	//如果指定了配置文件使用指定的配置
 	if a.configFilePath != nil {
-		logger.Logger.Infof("loading GateWayConfiguration for %s", *a.configFilePath)
+		logger.Logger.Infof("loading gateWayConfiguration for %s", *a.configFilePath)
 		a.configuration = config.NewGateWayConfiguration(a.configFilePath)
 	} else {
-		logger.Logger.Infof("use Default GateWayConfiguration")
+		logger.Logger.Infof("use default gateWayConfiguration")
 	}
 
 	//使用核心中间件来服务http
@@ -59,7 +59,7 @@ func (a *ProgramApp) Start() {
 		Handler:           handler.DispatcherHandlerConstant,
 	}
 	elapsed := time.Since(startTime)
-	logger.Logger.Infof("started GatewayApplication in %s", elapsed)
+	logger.Logger.Infof("started gatewayApplication in %s", elapsed)
 
 	//创建监听
 	a.listener = network.NewListenForIpPort(a.configuration.Server.Ip, a.configuration.Server.Port)

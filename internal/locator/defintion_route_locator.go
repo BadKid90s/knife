@@ -2,7 +2,7 @@ package locator
 
 import (
 	"fmt"
-	"gateway/config/definition"
+	definition2 "gateway/internal/config/definition"
 	"gateway/internal/filter"
 	"gateway/internal/predicate"
 	"gateway/internal/predicate/factory"
@@ -20,7 +20,7 @@ type DefinitionRouteLocator struct {
 
 func (l *DefinitionRouteLocator) GetRoutes() ([]*route.Route, error) {
 	routes := make([]*route.Route, 0)
-	for _, routeDefinition := range definition.RouteDefinitions {
+	for _, routeDefinition := range definition2.RouteDefinitions {
 		r, err := l.ConvertToRoute(routeDefinition)
 		if err != nil {
 			return nil, err
@@ -30,7 +30,7 @@ func (l *DefinitionRouteLocator) GetRoutes() ([]*route.Route, error) {
 	return routes, nil
 }
 
-func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition.RouteDefinition) (*route.Route, error) {
+func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition2.RouteDefinition) (*route.Route, error) {
 	logger.Logger.Debugf("started covert route, route-id: %s", routeDefinition.Id)
 	predicates, err := combinePredicates(routeDefinition)
 	if err != nil {
@@ -50,7 +50,7 @@ func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *definition.Rout
 }
 
 // 组合谓词
-func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func combinePredicates(routeDefinition *definition2.RouteDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
 	predicates := routeDefinition.PredicateDefinitions
 	if len(predicates) > 0 {
 		p, err := lookup(routeDefinition, predicates[0])
@@ -73,7 +73,7 @@ func combinePredicates(routeDefinition *definition.RouteDefinition) (predicate.P
 	return &predicate.NullableDefaultPredicate[*web.ServerWebExchange]{}, nil
 }
 
-func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func lookup(_ *definition2.RouteDefinition, predicateDefinition *definition2.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
 	f, ok := factory.PredicateFactories[predicateDefinition.Name]
 	if !ok {
 		return nil, fmt.Errorf("Unsupported predicate [%s] ", predicateDefinition.Name)
@@ -88,7 +88,7 @@ func lookup(_ *definition.RouteDefinition, predicateDefinition *definition.Predi
 	return apply, nil
 }
 
-func getFilters(_ *definition.RouteDefinition) ([]filter.GatewayFilter, error) {
+func getFilters(_ *definition2.RouteDefinition) ([]filter.GatewayFilter, error) {
 	var fs = make([]filter.GatewayFilter, 0)
 	logger.Logger.Debugf("completed loading routing filter, total: %d ", len(fs))
 	return fs, nil
