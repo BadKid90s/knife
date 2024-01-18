@@ -1,7 +1,6 @@
 package definition
 
 import (
-	"errors"
 	"fmt"
 	"gateway/logger"
 	"gopkg.in/yaml.v2"
@@ -114,13 +113,4 @@ func parasPredicateDefinitions(predicates []string) []*PredicateDefinition {
 
 func generatorKey(i int) string {
 	return fmt.Sprintf("_key_%d", i)
-}
-
-func convString(val any) (string, error) {
-	str, ok := val.(string)
-	if ok {
-		return str, nil
-	}
-	return "", errors.New("conv string error")
-
 }

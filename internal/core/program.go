@@ -44,7 +44,7 @@ func (a *ProgramApp) Start() {
 	a.listener = network.NewListenForIpPort(ip, port)
 
 	elapsed := time.Since(startTime)
-	logger.Logger.Infof("started gatewayApplication in %s", elapsed)
+	logger.Logger.TagLogger("core").Infof("started gatewayApplication in %s", elapsed)
 
 	run(a.listener)
 }
@@ -81,6 +81,6 @@ func run(listener net.Listener) {
 	err := httpServer.Serve(listener)
 
 	if err != nil {
-		logger.Logger.Infof("app runing err %s", err)
+		logger.Logger.TagLogger("core").Errorf("app runing err %s", err)
 	}
 }

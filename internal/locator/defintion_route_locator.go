@@ -35,7 +35,7 @@ func (l *DefinitionRouteLocator) GetRoutes() ([]*route.Route, error) {
 }
 
 func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *config.RouteConfiguration) (*route.Route, error) {
-	logger.Logger.Debugf("started covert route, route-id: %s", routeDefinition.Id)
+	logger.Logger.TagLogger("locator").Debugf("started covert route, route-id: %s", routeDefinition.Id)
 	predicates, err := combinePredicates(routeDefinition)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func combinePredicates(routeDefinition *config.RouteConfiguration) (predicate.Pr
 				Right: found,
 			}
 		}
-		logger.Logger.Debugf("completed loading routing predicates，total: %d", len(predicates))
+		logger.Logger.TagLogger("locator").Debugf("completed loading routing predicates，total: %d", len(predicates))
 		return p, nil
 	}
 	return &predicate.NullableDefaultPredicate[*web.ServerWebExchange]{}, nil
@@ -80,14 +80,14 @@ func combinePredicates(routeDefinition *config.RouteConfiguration) (predicate.Pr
 func lookup(_ *config.RouteConfiguration, predicateDefinition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	f, ok := factory.PredicateFactories[predicateDefinition.Name]
 	if !ok {
-		return nil, fmt.Errorf("Unsupported predicate [%s] ", predicateDefinition.Name)
+		return nil, fmt.Errorf("locator: Unsupported predicate [%s] ", predicateDefinition.Name)
 	}
 	apply, err := f.Apply(predicateDefinition)
 	if err != nil {
 		return nil, err
 	}
 	if apply == nil {
-		return nil, fmt.Errorf("an error occurred in building Predicate [%s] ", predicateDefinition.Name)
+		return nil, fmt.Errorf("locator: an error occurred in building Predicate [%s] ", predicateDefinition.Name)
 	}
 	return apply, nil
 }
@@ -101,9 +101,9 @@ func getFilters(router *config.RouteConfiguration) ([]filter.OrderedFilter, erro
 			gatewayFilter := gatewayFactory.Apply(configuration)
 			gatewayFilterList = append(gatewayFilterList, filter.NewOrderedFilter(order, gatewayFilter))
 		} else {
-			locatorLogger.Warnf("")
+			logger.Logger.TagLogger("locator").Warnf("filter configuration is error,not matched gateway filter, filter name: %s", configuration.Name)
 		}
 	}
-	logger.Logger.Debugf("completed loading routing filter, total: %d ", len(gatewayFilterList))
+	logger.Logger.TagLogger("locator").Debugf("completed loading routing filter, total: %d ", len(gatewayFilterList))
 	return gatewayFilterList, nil
 }

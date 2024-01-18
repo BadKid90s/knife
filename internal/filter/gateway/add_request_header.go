@@ -9,7 +9,7 @@ import (
 type AddRequestHeaderFactory struct {
 }
 
-func (a *AddRequestHeaderFactory) GetOrder() int16 {
+func (a *AddRequestHeaderFactory) GetOrder() int {
 	return 1
 }
 

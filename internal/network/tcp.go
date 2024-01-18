@@ -23,9 +23,9 @@ func NewListenForIpPort(ip string, port int) net.Listener {
 	address := fmt.Sprintf("%s:%d", ip, port)
 	listener, err := NewListenForAddress(address)
 	if err != nil {
-		logger.Logger.Fatalf("create a listener to send errors, listen to the address: %s ", err)
+		logger.Logger.TagLogger("network").Fatalf("create a listener to send errors, listen to the address: %s ", err)
 	}
-	logger.Logger.Infof("listener succeeded, listen to the address: %s ", address)
+	logger.Logger.TagLogger("network").Infof("listener succeeded, listen to the address: %s ", address)
 	return listener
 }
 

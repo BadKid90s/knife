@@ -46,13 +46,13 @@ func NewGatewayConfiguration(filepath *string) {
 	if filepath != nil {
 		err := parseConfig(filepath, configuration)
 		logger.NewLogger(configuration.Logger.Level)
-		logger.Logger.Infof("loading gateWayConfiguration for %s", *filepath)
+		logger.Logger.TagLogger("config").Infof("loading gateWayConfiguration for %s", *filepath)
 		if err != nil {
-			logger.Logger.Fatalf("parse config failed，err:%s ", err)
+			logger.Logger.TagLogger("config").Fatalf("parse config failed，err:%s ", err)
 		}
 	} else {
 		logger.NewLogger(configuration.Logger.Level)
-		logger.Logger.Infof("use default gateWayConfiguration")
+		logger.Logger.TagLogger("config").Infof("use default gateWayConfiguration")
 	}
 	GlobalGatewayConfiguration = configuration
 }
