@@ -14,18 +14,6 @@ func (m Constructor) Filter(exchange *web.ServerWebExchange, chain Chain) {
 	m(exchange, chain)
 }
 
-//
-//var GatewayFilters []OrderedFilter
-//
-//func AddGatewayFilters(name string, order int16, filter Filter) {
-//	f := OrderedFilter{
-//		order:  order,
-//		Name:   name,
-//		Filter: filter,
-//	}
-//	GatewayFilters = append(GatewayFilters, f)
-//}
-
 type OrderedFilter struct {
 	Name   string
 	Filter Filter
