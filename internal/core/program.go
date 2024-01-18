@@ -19,6 +19,7 @@ func GatewayApp() *ProgramApp {
 type ProgramApp struct {
 	configFilePath *string
 	listener       net.Listener
+	handler        http.Handler
 }
 
 // SetConfigFilePath 设置配置文件路径
@@ -38,6 +39,8 @@ func (a *ProgramApp) Start() {
 
 	config.NewGatewayConfiguration(a.configFilePath)
 
+	a.handler = handler.NewDispatcherHandler()
+
 	//创建监听
 	ip := config.GlobalGatewayConfiguration.Server.Ip
 	port := config.GlobalGatewayConfiguration.Server.Port
@@ -46,7 +49,7 @@ func (a *ProgramApp) Start() {
 	elapsed := time.Since(startTime)
 	logger.Logger.TagLogger("core").Infof("started gatewayApplication in %s", elapsed)
 
-	run(a.listener)
+	run(a.listener, a.handler)
 }
 
 // Stop 停止程序
@@ -68,14 +71,14 @@ func printBanner() {
 	fmt.Println("                                    |___/")
 }
 
-func run(listener net.Listener) {
+func run(listener net.Listener, handler http.Handler) {
 	//使用核心中间件来服务http
 	httpServer := &http.Server{
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      2 * time.Minute,
 		IdleTimeout:       5 * time.Minute,
-		Handler:           handler.NewDispatcherHandler(),
+		Handler:           handler,
 	}
 	//监听服务
 	err := httpServer.Serve(listener)
