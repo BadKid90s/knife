@@ -40,6 +40,7 @@ func (r *RoutePredicateHandlerMapping) getHandlerInternal(exchange *web.ServerWe
 	if err != nil {
 		return nil, err
 	}
+	exchange.Attributes[util.GatewayRouteAttr] = gatewayRoute
 	exchange.Attributes[util.GatewayRequestUrlAttr] = gatewayRoute.Uri
 	//返回
 	return r.filterWebHandler, nil

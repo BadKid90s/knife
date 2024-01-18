@@ -15,14 +15,12 @@ func (m Constructor) Filter(exchange *web.ServerWebExchange, chain Chain) {
 }
 
 type OrderedFilter struct {
-	Name   string
 	Filter Filter
 	Order  int16
 }
 
-func NewOrderedFilter(name string, order int16, filter Filter) OrderedFilter {
+func NewOrderedFilter(order int16, filter Filter) OrderedFilter {
 	return OrderedFilter{
-		Name:   name,
 		Filter: filter,
 		Order:  order,
 	}

@@ -20,5 +20,5 @@ func (f *WebClientHttpRoutingFilter) Filter(exchange *web.ServerWebExchange, cha
 }
 
 func init() {
-	AddFilter("xxx", 1, &WebClientHttpRoutingFilter{})
+	AddFilter(1, &WebClientHttpRoutingFilter{})
 }

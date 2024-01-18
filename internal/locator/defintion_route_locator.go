@@ -3,6 +3,8 @@ package locator
 import (
 	"fmt"
 	"gateway/internal/config"
+	"gateway/internal/filter"
+	"gateway/internal/filter/gateway"
 	"gateway/internal/predicate"
 	"gateway/internal/predicate/factory"
 	"gateway/internal/route"
@@ -38,11 +40,16 @@ func (l *DefinitionRouteLocator) ConvertToRoute(routeDefinition *config.RouteCon
 	if err != nil {
 		return nil, err
 	}
+	filters, err := getFilters(routeDefinition)
+	if err != nil {
+		return nil, err
+	}
 	return &route.Route{
 		Id:         routeDefinition.Id,
 		Uri:        routeDefinition.Uri,
 		Order:      routeDefinition.Order,
 		Predicates: predicates,
+		Filters:    filters,
 	}, nil
 }
 
@@ -83,4 +90,20 @@ func lookup(_ *config.RouteConfiguration, predicateDefinition *config.PredicateC
 		return nil, fmt.Errorf("an error occurred in building Predicate [%s] ", predicateDefinition.Name)
 	}
 	return apply, nil
+}
+func getFilters(router *config.RouteConfiguration) ([]filter.OrderedFilter, error) {
+	var gatewayFilterList []filter.OrderedFilter
+
+	for _, configuration := range router.FilterConfiguration {
+		gatewayFactory := gateway.Factories[configuration.Name]
+		if gatewayFactory != nil {
+			order := gatewayFactory.GetOrder()
+			gatewayFilter := gatewayFactory.Apply(configuration)
+			gatewayFilterList = append(gatewayFilterList, filter.NewOrderedFilter(order, gatewayFilter))
+		} else {
+			locatorLogger.Warnf("")
+		}
+	}
+	logger.Logger.Debugf("completed loading routing filter, total: %d ", len(gatewayFilterList))
+	return gatewayFilterList, nil
 }

@@ -2,8 +2,9 @@ package handler
 
 import (
 	"gateway/internal/filter"
-	"gateway/internal/filter/gateway"
 	"gateway/internal/filter/global"
+	"gateway/internal/route"
+	"gateway/internal/util"
 	"gateway/internal/web"
 	"gateway/logger"
 )
@@ -11,14 +12,12 @@ import (
 func NewFilteringWebHandler() *FilteringWebHandler {
 
 	return &FilteringWebHandler{
-		globalFilters:  global.Filters,
-		gatewayFilters: gateway.Filters,
+		globalFilters: global.Filters,
 	}
 }
 
 type FilteringWebHandler struct {
-	globalFilters  []filter.OrderedFilter
-	gatewayFilters []filter.OrderedFilter
+	globalFilters []filter.OrderedFilter
 }
 
 func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
@@ -29,9 +28,13 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 		filters = append(filters, globalFilter)
 	}
 
-	for _, gatewayFilter := range h.gatewayFilters {
+	r := exchange.Attributes[util.GatewayRouteAttr]
+	router, ok := r.(route.Route)
+	if !ok {
+		return
+	}
+	for _, gatewayFilter := range router.Filters {
 		filters = append(filters, gatewayFilter)
 	}
-
 	filter.NewDefaultGatewayFilterChain(filters).Filter(exchange)
 }
