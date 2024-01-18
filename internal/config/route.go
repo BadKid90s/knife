@@ -14,4 +14,10 @@ type RouteConfiguration struct {
 	Uri                    string
 	Order                  string
 	PredicateConfiguration []*PredicateConfiguration
+	FilterConfiguration    []*FilterConfiguration
+}
+
+type FilterConfiguration struct {
+	Name string
+	Args map[any]any
 }

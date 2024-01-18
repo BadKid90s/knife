@@ -95,11 +95,20 @@ func parseConfig(configFile *string, configuration *GatewayConfiguration) error 
 			}
 		}
 
+		var filters = make([]*FilterConfiguration, len(v.FiltersDefinitions))
+		for j, item := range v.FiltersDefinitions {
+			filters[j] = &FilterConfiguration{
+				Name: item.Name,
+				Args: item.Args,
+			}
+		}
+
 		routes[i] = &RouteConfiguration{
 			Id:                     v.Id,
 			Uri:                    v.Uri,
 			Order:                  v.Order,
 			PredicateConfiguration: predicates,
+			FilterConfiguration:    filters,
 		}
 	}
 	configuration.Router.Routes = routes
