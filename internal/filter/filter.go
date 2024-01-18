@@ -7,12 +7,6 @@ import (
 type Filter interface {
 	Filter(exchange *web.ServerWebExchange, chain Chain)
 }
-type GlobalFilter interface {
-	Filter
-}
-type GatewayFilter interface {
-	Filter
-}
 
 type Constructor func(exchange *web.ServerWebExchange, chain Chain)
 
@@ -20,34 +14,28 @@ func (m Constructor) Filter(exchange *web.ServerWebExchange, chain Chain) {
 	m(exchange, chain)
 }
 
-var GlobalFilters filtersDomain
+//
+//var GatewayFilters []OrderedFilter
+//
+//func AddGatewayFilters(name string, order int16, filter Filter) {
+//	f := OrderedFilter{
+//		order:  order,
+//		Name:   name,
+//		Filter: filter,
+//	}
+//	GatewayFilters = append(GatewayFilters, f)
+//}
 
-func AddGlobalFilter(name string, order int16, filter Filter) {
-	f := Info{
-		order:  order,
-		Name:   name,
-		Filter: filter,
-	}
-	GlobalFilters.Filters = append(GlobalFilters.Filters, f)
-}
-
-var GatewayFilters filtersDomain
-
-func AddGatewayFilters(name string, order int16, filter Filter) {
-	f := Info{
-		order:  order,
-		Name:   name,
-		Filter: filter,
-	}
-	GatewayFilters.Filters = append(GatewayFilters.Filters, f)
-}
-
-type filtersDomain struct {
-	Filters []Info
-}
-
-type Info struct {
+type OrderedFilter struct {
 	Name   string
 	Filter Filter
-	order  int16
+	Order  int16
+}
+
+func NewOrderedFilter(name string, order int16, filter Filter) OrderedFilter {
+	return OrderedFilter{
+		Name:   name,
+		Filter: filter,
+		Order:  order,
+	}
 }

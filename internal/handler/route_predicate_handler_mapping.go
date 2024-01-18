@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"gateway/internal/filter"
 	"gateway/internal/locator"
 	"gateway/internal/route"
 	"gateway/internal/util"
@@ -12,7 +11,7 @@ import (
 
 func NewRoutePredicateHandlerMapping() *RoutePredicateHandlerMapping {
 	return &RoutePredicateHandlerMapping{
-		filterWebHandler: NewFilteringWebHandler(filter.GlobalFilters.Filters, filter.GatewayFilters.Filters),
+		filterWebHandler: NewFilteringWebHandler(),
 		routerLocator:    locator.NewCachingRouteLocator(),
 	}
 }
