@@ -30,7 +30,7 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 	}
 
 	r := exchange.Attributes[util.GatewayRouteAttr]
-	router, ok := r.(route.Route)
+	router, ok := r.(*route.Route)
 	if !ok {
 		return
 	}
