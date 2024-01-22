@@ -2,12 +2,15 @@ server:
   port: 8090
 routes:
   - id: wry
-    uri: https://chat18.aichatos.xyz/
+    uri: http://127.0.0.1:8080
     order: 1
     predicates:
       - Method=GET,POST
       - After=2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
     filters:
+      - name: StripPrefix
+        args:
+          path: /name
       - name: AddRequestHeader
         args:
           X-Token: sss
