@@ -32,7 +32,7 @@ type PredicateDefinition struct {
 
 type FilterDefinition struct {
 	Name string
-	Args map[any]any
+	Args map[string]any
 }
 
 func ParseRouteConfig(buffer []byte) (*GatewayRoutesDefinition, error) {
@@ -59,7 +59,7 @@ func parasFiltersDefinitions(filters []any) []*FilterDefinition {
 	for _, item := range filters {
 
 		fd := &FilterDefinition{
-			Args: make(map[any]any),
+			Args: make(map[string]any),
 		}
 		switch v := item.(type) {
 		case map[any]any:
@@ -71,7 +71,13 @@ func parasFiltersDefinitions(filters []any) []*FilterDefinition {
 			}
 			m, ok := v[Args].(map[any]any)
 			if ok {
-				fd.Args = m
+				for k, v := range m {
+					key, ok := k.(string)
+					if !ok {
+						logger.Logger.Fatalf("an error occurred while resolving the assertion %s ", v)
+					}
+					fd.Args[key] = v
+				}
 			} else {
 				logger.Logger.Fatalf("an error occurred while resolving the assertion %s ", v)
 			}

@@ -8,9 +8,8 @@ routes:
       - Method=GET,POST
       - After=2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
     filters:
-      - AddRequestHeader=aa,ss
-      - name: AddResponseHeader
+      - name: AddRequestHeader
         args:
-          key: 1
+          X-Token: sss
 logger:
   level: debug

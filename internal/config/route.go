@@ -19,5 +19,5 @@ type RouteConfiguration struct {
 
 type FilterConfiguration struct {
 	Name string
-	Args map[any]any
+	Args map[string]any
 }
