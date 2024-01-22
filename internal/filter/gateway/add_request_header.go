@@ -19,7 +19,7 @@ func (a *AddRequestHeaderFactory) Apply(configuration *config.FilterConfiguratio
 		header = i
 		val, ok := value.(string)
 		if !ok {
-			logger.Logger.TagLogger("addRequestHeaderFactory").Fatalf("config value is not string type, key:%s", i)
+			logger.Logger.TagLogger("addReqHeader").Fatalf("config value is not string type, key:%s", i)
 		}
 		headerValue = val
 	}
