@@ -91,15 +91,14 @@ func lookup(_ *config.RouteConfiguration, predicateDefinition *config.PredicateC
 	}
 	return apply, nil
 }
-func getFilters(router *config.RouteConfiguration) ([]filter.OrderedFilter, error) {
-	var gatewayFilterList []filter.OrderedFilter
+func getFilters(router *config.RouteConfiguration) ([]filter.Filter, error) {
+	var gatewayFilterList []filter.Filter
 
 	for _, configuration := range router.FilterConfiguration {
 		gatewayFactory := gateway.Factories[configuration.Name]
 		if gatewayFactory != nil {
-			order := gatewayFactory.GetOrder()
 			gatewayFilter := gatewayFactory.Apply(configuration)
-			gatewayFilterList = append(gatewayFilterList, filter.NewOrderedFilter(order, gatewayFilter))
+			gatewayFilterList = append(gatewayFilterList, gatewayFilter)
 		} else {
 			logger.Logger.TagLogger("locator").Warnf("filter configuration is error,not matched gateway filter, filter name: %s", configuration.Name)
 		}

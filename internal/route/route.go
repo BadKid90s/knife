@@ -11,5 +11,5 @@ type Route struct {
 	Uri        string
 	Order      string
 	Predicates predicate.Predicate[*web.ServerWebExchange]
-	Filters    []filter.OrderedFilter
+	Filters    []filter.Filter
 }

@@ -7,7 +7,6 @@ import (
 
 type Factory interface {
 	Apply(configuration *config.FilterConfiguration) filter.Filter
-	GetOrder() int
 }
 
 var Factories = make(map[string]Factory)

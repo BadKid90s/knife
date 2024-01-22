@@ -25,3 +25,10 @@ func NewOrderedFilter(order int, filter Filter) OrderedFilter {
 		Order:  order,
 	}
 }
+
+func NewOrderedFilterAdapter(filter Filter) OrderedFilter {
+	return OrderedFilter{
+		Filter: filter,
+		Order:  0,
+	}
+}

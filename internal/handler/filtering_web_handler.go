@@ -7,6 +7,7 @@ import (
 	"gateway/internal/util"
 	"gateway/internal/web"
 	"gateway/logger"
+	"sort"
 )
 
 func NewFilteringWebHandler() *FilteringWebHandler {
@@ -34,7 +35,11 @@ func (h *FilteringWebHandler) Handle(exchange *web.ServerWebExchange) {
 		return
 	}
 	for _, gatewayFilter := range router.Filters {
-		filters = append(filters, gatewayFilter)
+		filters = append(filters, filter.NewOrderedFilterAdapter(gatewayFilter))
 	}
+
+	sort.Slice(filters, func(i, j int) bool {
+		return filters[i].Order < filters[j].Order
+	})
 	filter.NewDefaultGatewayFilterChain(filters).Filter(exchange)
 }
