@@ -1,11 +1,11 @@
 name: Release
-#on:
-#  create:
-#    tags:
-#      - v*
 on:
-#  pull_request:
-  push:
+  create:
+    tags:
+      - t*
+#on:
+##  pull_request:
+#  push:
 
 permissions:
   contents: write
