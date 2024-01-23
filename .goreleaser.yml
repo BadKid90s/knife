@@ -3,4 +3,4 @@ builds:
     main: ./cmd
     hooks:
       post:
-        - cp ./config/* {{ .Path }}
+        - cp ./config  {{ dir .Path }}
