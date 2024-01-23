@@ -1,6 +1,11 @@
 builds:
   - id: go-release
     main: ./cmd
+    hooks:
+      post:
+        - cmd: touch {{ dir .Path }}/hello.txt
 source:
+  enabled: true
   files:
-    - config/*
+    - ./config/*
+    - .gitignore
