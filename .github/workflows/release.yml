@@ -24,11 +24,7 @@ jobs:
           distribution: goreleaser
           version: latest
           args: release --clean
-          workdir: myfolder
+          files: |
+            config/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload assets
-        run: |
-          pwd |
-          ls -R myfolder
