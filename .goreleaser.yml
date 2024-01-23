@@ -4,8 +4,8 @@ builds:
     hooks:
       post:
         - cmd: touch {{ dir .Path }}/hello.txt
-source:
-  enabled: true
-  files:
-    - ./config/*
-    - .gitignore
+#source:
+#  enabled: true
+#  files:
+#    - ./config/*
+#    - .gitignore
