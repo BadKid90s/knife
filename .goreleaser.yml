@@ -1,10 +1,6 @@
 builds:
   - id: go-release
     main: ./cmd
-    hooks:
-#      pre:
-#        - cp  ./config/application.yaml {{ dir .Path }}
-#        - echo {{ dir .Path }}
-      post:
-        - cmd: cp ./config/application.yaml {{ dir .Path }}
-        - cmd: echo {{ dir .Path }}
+source:
+  files:
+    - config/*
