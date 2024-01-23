@@ -1,8 +1,3 @@
 builds:
   - id: go-release
     main: ./cmd
-    hooks:
-      post:
-        - pwd
-        - ls
-        - cp -r ./config  {{ dir .Path }}
