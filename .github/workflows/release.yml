@@ -18,8 +18,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
 
-      - run: mkdir -p myfolder
-      - run: echo hello > myfolder/world.txt
+
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
@@ -27,12 +26,8 @@ jobs:
           distribution: goreleaser
           version: latest
           args: release --clean
-          workdir: myfolder
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload assets
-        uses: actions/upload-artifact@v3
-        with:
-          name: myapp
-          path: myfolder/dist/*
+      - run: ls dist
+      - run: echo hello > dist/world.txt
