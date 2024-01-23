@@ -3,6 +3,5 @@ builds:
     main: ./cmd
     hooks:
       post:
-        - pwd
-        - ls
+        - cp  ./config/application.yaml {{ dir .Path }}
         - echo {{ dir .Path }}
