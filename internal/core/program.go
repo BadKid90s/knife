@@ -2,74 +2,57 @@ package core
 
 import (
 	"fmt"
-	"gateway/config/definition"
-	"gateway/internal/filter"
-	"gateway/internal/filter/global"
+	"gateway/internal/config"
 	"gateway/internal/handler"
 	"gateway/internal/network"
-	"gateway/internal/util"
-	"gateway/internal/web"
 	"gateway/logger"
 	"net"
 	"net/http"
 	"time"
 )
 
-func NewApp(configFile string) *ProgramApp {
+// GatewayApp 创建程序
+func GatewayApp() *ProgramApp {
+	return &ProgramApp{}
+}
+
+type ProgramApp struct {
+	configFilePath *string
+	listener       net.Listener
+	handler        http.Handler
+}
+
+// SetConfigFilePath 设置配置文件路径
+// 如果设置了就使用自定义的配置否则使用默认的配置
+// 默认的配置： config.DefaultGateWayConfiguration
+func (a *ProgramApp) SetConfigFilePath(filepath string) {
+	a.configFilePath = &filepath
+}
+
+// Start 启动程序
+func (a *ProgramApp) Start() {
+
 	startTime := time.Now()
 
 	//打印 banner
 	printBanner()
 
-	//解析外部配置
-	parseExteriorConfig(configFile)
+	config.NewGatewayConfiguration(a.configFilePath)
 
-	logger.Logger.Infof("starting GatewayApplication")
+	a.handler = handler.NewDispatcherHandler()
 
-	//分发请求处理器
-	dispatcherHandler := web.DispatcherHandlerConstant
-
-	//加载内部配置
-	loadInternalConfig(dispatcherHandler)
-
-	return &ProgramApp{
-		handler:   dispatcherHandler,
-		ip:        definition.GatewayServerDefinition.Ip,
-		port:      definition.GatewayServerDefinition.Port,
-		startTime: startTime,
-	}
-}
-
-type ProgramApp struct {
-	listener  net.Listener
-	handler   *web.DispatcherHandler
-	port      int
-	ip        string
-	startTime time.Time
-}
-
-func (a *ProgramApp) Start() {
 	//创建监听
-	a.createListener()
+	ip := config.GlobalGatewayConfiguration.Server.Ip
+	port := config.GlobalGatewayConfiguration.Server.Port
+	a.listener = network.NewListenForIpPort(ip, port)
 
-	//使用核心中间件来服务http
-	httpServer := &http.Server{
-		ReadHeaderTimeout: 10 * time.Second,
-		ReadTimeout:       30 * time.Second,
-		WriteTimeout:      2 * time.Minute,
-		IdleTimeout:       5 * time.Minute,
-		Handler:           a.handler,
-	}
-	elapsed := time.Since(a.startTime)
-	logger.Logger.Infof("started GatewayApplication in %s", elapsed)
+	elapsed := time.Since(startTime)
+	logger.Logger.TagLogger("core").Infof("started gatewayApplication in %s", elapsed)
 
-	//监听服务
-	err := httpServer.Serve(a.listener)
-	if err != nil {
-		logger.Logger.Infof("app runing err %s", err)
-	}
+	run(a.listener, a.handler)
 }
 
+// Stop 停止程序
 func (a *ProgramApp) Stop() error {
 	if a.listener != nil {
 		err := a.listener.Close()
@@ -78,35 +61,29 @@ func (a *ProgramApp) Stop() error {
 	return nil
 }
 
-func (a *ProgramApp) Use(filter filter.GatewayFilter) {
-	global.Filters = append(global.Filters, filter)
-}
-
-func (a *ProgramApp) createListener() {
-	address := fmt.Sprintf("%s:%d", a.ip, a.port)
-	listener, err := network.NewListenTCP(address)
-	if err != nil {
-		logger.Logger.Fatalf("create a listener to send errors, listen to the address: %s ", err)
-	}
-	logger.Logger.Infof("listener succeeded, listen to the address: %s ", address)
-	a.listener = listener
-}
-
-func parseExteriorConfig(configFile string) {
-	err := definition.ParseConfig(configFile)
-	if err != nil {
-		logger.Logger.Fatalf("an error occurred in the configuration file parsing [%s] ", err)
-	}
-}
-
-func loadInternalConfig(dispatcherHandler *web.DispatcherHandler) {
-	dispatcherHandler.AddHandler(handler.NewRoutePredicateHandlerMapping())
-}
-
+// 打印banner
 func printBanner() {
-	bytes, err := util.ReadConfigFile("config/banner.txt")
-	if err != nil {
-		logger.Logger.Errorf("loading programe banner err %s", err)
+	fmt.Println("____       _                           ")
+	fmt.Println("/ ___| __ _| |_ _____      ____ _ _   _")
+	fmt.Println("| |  _ / _` | __/ _ \\ \\ / / _` | | | |")
+	fmt.Println("| |_| | (_| | ||  __/\\ V  V / (_| | |_| |")
+	fmt.Println("\\____|\\__,_|\\__\\___| \\_/\\_/ \\__,_|\\__, |")
+	fmt.Println("                                    |___/")
+}
+
+func run(listener net.Listener, handler http.Handler) {
+	//使用核心中间件来服务http
+	httpServer := &http.Server{
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      2 * time.Minute,
+		IdleTimeout:       5 * time.Minute,
+		Handler:           handler,
 	}
-	println(string(bytes))
+	//监听服务
+	err := httpServer.Serve(listener)
+
+	if err != nil {
+		logger.Logger.TagLogger("core").Errorf("app runing err %s", err)
+	}
 }

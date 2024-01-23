@@ -1,16 +1,15 @@
-package web
+package handler
 
 import (
+	"gateway/internal/web"
 	"gateway/logger"
 	"net/http"
 	"time"
 )
 
-var DispatcherHandlerConstant = newDispatcherHandler()
-
-func newDispatcherHandler() *DispatcherHandler {
+func NewDispatcherHandler() *DispatcherHandler {
 	return &DispatcherHandler{
-		handlerMappings: make([]HandlerMapping, 0),
+		handlerMappings: []HandlerMapping{NewRoutePredicateHandlerMapping()},
 	}
 }
 
@@ -29,7 +28,7 @@ func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.R
 	startTime := time.Now()
 	logger.Logger.Infof("dispatcher handler received request. url: %s ", request.URL)
 
-	exchange := NewServerWebExchange(write, request)
+	exchange := web.NewServerWebExchange(write, request)
 	for _, handlerMapping := range h.handlerMappings {
 		handler, err := handlerMapping.GetHandler(exchange)
 		if err != nil {
@@ -46,9 +45,9 @@ func (h *DispatcherHandler) ServeHTTP(write http.ResponseWriter, request *http.R
 	logger.Logger.Infof("dispatcher handler process sucess in %s", elapsed)
 }
 
-func createNotFoundError(exchange *ServerWebExchange) {
+func createNotFoundError(exchange *web.ServerWebExchange) {
 	http.NotFound(exchange.Write, exchange.Request)
 }
-func createOtherError(exchange *ServerWebExchange, msg string) {
+func createOtherError(exchange *web.ServerWebExchange, msg string) {
 	http.Error(exchange.Write, msg, 500)
 }

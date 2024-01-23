@@ -1,13 +1,14 @@
 package locator
 
 import (
+	"gateway/internal/config"
 	"gateway/internal/route"
 	"gateway/logger"
 )
 
 func NewCachingRouteLocator() *CachingRouteLocator {
 	locator := &CachingRouteLocator{
-		delegate: NewDefinitionRouteLocator(),
+		delegate: NewDefinitionRouteLocator(config.GlobalGatewayConfiguration.Router),
 	}
 	err := locator.fetch()
 	if err != nil {

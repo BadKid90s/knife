@@ -2,15 +2,17 @@ server:
   port: 8090
 routes:
   - id: wry
-    uri: http://localhost:8080
+    uri: http://127.0.0.1:8080
     order: 1
     predicates:
       - Method=GET,POST
       - After=2023-06-26T14:30:00.000+08:00[Asia/Shanghai]
-      - Before=2023-07-26T14:30:00.000+08:00[Asia/Shanghai]
-      - Between=2023-06-26T14:30:00.000+08:00[Asia/Shanghai],2023-07-26T14:30:00.000+08:00[Asia/Shanghai]
-      - Cookie=chocolate,123
-      - Header=auth,\d+
-      - Host=wangruiyudeMacBook-Pro.**
+    filters:
+      - name: StripPrefix
+        args:
+          path: /name
+      - name: AddRequestHeader
+        args:
+          X-Token: sss
 logger:
   level: debug

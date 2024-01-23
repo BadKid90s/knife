@@ -2,7 +2,7 @@ package factory
 
 import (
 	"errors"
-	"gateway/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"gateway/logger"
@@ -13,7 +13,7 @@ type HeaderRoutePredicateFactory struct {
 	config *HeaderPredicateConfig
 }
 
-func (f *HeaderRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *HeaderRoutePredicateFactory) Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (f *HeaderRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 	return f.apply(), nil
 
 }
-func (f *HeaderRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+func (f *HeaderRoutePredicateFactory) parseConfig(definition *config.PredicateConfiguration) error {
 	args := getArgs(definition)
 	if len(args) != 2 {
 		return errors.New("need two datetime type params for HeaderRoutePredicateFactory")

@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"gateway/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"gateway/logger"
@@ -11,7 +11,7 @@ type MethodRoutePredicateFactory struct {
 	config *MethodPredicateConfig
 }
 
-func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *MethodRoutePredicateFactory) Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func (f *MethodRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 	return f.apply(), nil
 
 }
-func (f *MethodRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+func (f *MethodRoutePredicateFactory) parseConfig(definition *config.PredicateConfiguration) error {
 	args := getArgs(definition)
 	f.config = &MethodPredicateConfig{
 		methods: args,

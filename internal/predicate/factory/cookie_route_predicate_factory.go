@@ -2,7 +2,7 @@ package factory
 
 import (
 	"errors"
-	"gateway/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/web"
 	"gateway/logger"
@@ -13,7 +13,7 @@ type CookieRoutePredicateFactory struct {
 	config *CookiePredicateConfig
 }
 
-func (f *CookieRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *CookieRoutePredicateFactory) Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (f *CookieRoutePredicateFactory) Apply(definition *definition.PredicateDefi
 	return f.apply(), nil
 
 }
-func (f *CookieRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+func (f *CookieRoutePredicateFactory) parseConfig(definition *config.PredicateConfiguration) error {
 	args := getArgs(definition)
 	if len(args) != 2 {
 		return errors.New("need two datetime type params for CookieRoutePredicateFactory")

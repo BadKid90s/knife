@@ -2,7 +2,7 @@ package factory
 
 import (
 	"errors"
-	"gateway/config/definition"
+	"gateway/internal/config"
 	"gateway/internal/predicate"
 	"gateway/internal/util"
 	"gateway/internal/web"
@@ -14,7 +14,7 @@ type BetweenRoutePredicateFactory struct {
 	config *BetweenPredicateConfig
 }
 
-func (f *BetweenRoutePredicateFactory) Apply(definition *definition.PredicateDefinition) (predicate.Predicate[*web.ServerWebExchange], error) {
+func (f *BetweenRoutePredicateFactory) Apply(definition *config.PredicateConfiguration) (predicate.Predicate[*web.ServerWebExchange], error) {
 	err := f.parseConfig(definition)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func (f *BetweenRoutePredicateFactory) Apply(definition *definition.PredicateDef
 	return f.apply(), nil
 
 }
-func (f *BetweenRoutePredicateFactory) parseConfig(definition *definition.PredicateDefinition) error {
+func (f *BetweenRoutePredicateFactory) parseConfig(definition *config.PredicateConfiguration) error {
 	args := getArgs(definition)
 	if len(args) != 2 {
 		return errors.New("need two datetime type params for betweenRoutePredicate")

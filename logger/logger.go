@@ -7,11 +7,39 @@ import (
 	"strings"
 )
 
-// Logger 全局日志记录器
-var Logger *logrus.Logger
+//
+//// Logger 全局日志记录器
+//// var Logger = logrus.New()
+//var Logger = &Loggers{
+//	logger: logrus.New(),
+//}
+//
+//type Loggers struct {
+//	logger *logrus.Logger
+//}
+//
+//func (l Loggers) TagLogger(tag string) *logrus.Entry {
+//	return l.logger.WithField("tag", tag)
+//}
+
+//// TagLogger 获取带标记的日志记录器
+//func TagLogger(tag string) *logrus.Entry {
+//	return Logger.WithField("tag", tag)
+//}
+
+var Logger = &Loggers{
+	logrus.New(),
+}
+
+type Loggers struct {
+	*logrus.Logger
+}
+
+func (l Loggers) TagLogger(tag string) *logrus.Entry {
+	return l.WithField("tag", tag)
+}
 
 func NewLogger(level string) {
-	Logger = logrus.New()
 	Logger.SetFormatter(&customFormatter{})
 	Logger.SetOutput(os.Stdout)
 
@@ -61,7 +89,7 @@ func (customFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	fieldsString := strings.Join(fields, " ")
 
 	logString := fmt.Sprintf(
-		"%s [%5s] %s: %s",
+		"%s [%7s] %8s: %s",
 		entry.Time.Format("2006-01-02 15:04:05.000"),
 		strings.ToUpper(entry.Level.String()),
 		tagString,
