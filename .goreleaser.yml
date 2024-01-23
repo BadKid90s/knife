@@ -1,3 +1,8 @@
 builds:
   - id: go-release
     main: ./cmd
+    hooks:
+      post:
+        - pwd
+        - ls
+        - echo {{ dir .Path }}
