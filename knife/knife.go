@@ -7,7 +7,7 @@ import (
 
 const AbortIndex = math.MaxInt
 
-var AllowTrueMiddlewareMatcher = MiddlewareMatcher(func(*Context) bool {
+var AllowTrueMiddlewareMatcher = MiddlewareMatcher(func(HttpResponse, HttpRequest) bool {
 	return true
 })
 
@@ -25,8 +25,10 @@ type (
 	HttpHandler struct {
 		http.Handler
 	}
+	HttpResponse http.ResponseWriter
+	HttpRequest  *http.Request
 
-	MiddlewareMatcher func(*Context) bool
+	MiddlewareMatcher func(HttpResponse, HttpRequest) bool
 
 	MiddlewareFunc func(*Context)
 
@@ -50,7 +52,8 @@ func (c *Context) Next() {
 
 	s := len(middlewares)
 	for ; c.index < s; c.index++ {
-		if c.chain.middlewareMatchers[c.index](c) {
+
+		if c.chain.middlewareMatchers[c.index](c.Writer, c.Req) {
 			middlewares[c.index](c)
 		}
 	}
@@ -77,9 +80,7 @@ func NewChain(httpHandle http.Handler, handlers ...MiddlewareFunc) *Chain {
 	} else {
 		h = &HttpHandler{httpHandle}
 	}
-	chain := &Chain{
-		HttpHandler: h,
-	}
+	chain := newChain(h, nil, nil)
 	return chain.Use(handlers...)
 }
 
@@ -117,15 +118,16 @@ func (chain *Chain) Use(middlewares ...MiddlewareFunc) *Chain {
 }
 
 func (chain *Chain) UseMatcher(matcher MiddlewareMatcher, middlewares ...MiddlewareFunc) *Chain {
-	length := len(chain.middlewares) + len(middlewares)
-	newHandlers := make([]MiddlewareFunc, length)
+	var newHandlers []MiddlewareFunc
 	newHandlers = append(newHandlers, chain.middlewares...)
 	newHandlers = append(newHandlers, middlewares...)
 
-	middlewareMatchers := make([]MiddlewareMatcher, length)
+	var middlewareMatchers []MiddlewareMatcher
 	middlewareMatchers = append(middlewareMatchers, chain.middlewareMatchers...)
 	for i := 0; i < len(middlewares); i++ {
 		middlewareMatchers = append(middlewareMatchers, matcher)
 	}
-	return newChain(chain.HttpHandler, newHandlers, middlewareMatchers)
+	chain.middlewares = newHandlers
+	chain.middlewareMatchers = middlewareMatchers
+	return chain
 }
