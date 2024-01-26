@@ -1,7 +1,7 @@
 # Knife
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/BadKid90s/knife?sort=semver)](https://github.com/BadKid90s/knife/releases)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/minekube/gate?logo=go)](https://golang.org/doc/devel/release.html)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/BadKid90s/knife/go.yml?branch=master&style=flat-square)](https://github.com/BadKid90s/knife/blob/main/.github/workflows/go.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/BadKid90s/knife/go.yml?branch=main&style=flat-square)](https://github.com/BadKid90s/knife/blob/main/.github/workflows/go.yml)
 [![GitHub issues](https://img.shields.io/github/issues/sqlex/sqlex?style=flat-square)](https://github.com/sqlex/sqlex/issues)
 
 Knife Is The Lightweight Middleware For Golang
