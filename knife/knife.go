@@ -1,42 +1,12 @@
 package knife
 
 import (
-	"math"
 	"net/http"
 )
-
-const AbortIndex = math.MaxInt
-
-var AllowTrueMiddlewareMatcher = MiddlewareMatcher(func(HttpResponse, HttpRequest) bool {
-	return true
-})
-
-var (
-	defaultHttpHandler http.Handler = http.NewServeMux()
-)
-
-type HttpHandleFunc func(http.ResponseWriter, *http.Request)
-
-func (f HttpHandleFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	f(w, r)
-}
 
 type (
 	HttpHandler struct {
 		http.Handler
-	}
-	HttpResponse http.ResponseWriter
-	HttpRequest  *http.Request
-
-	MiddlewareMatcher func(HttpResponse, HttpRequest) bool
-
-	MiddlewareFunc func(*Context)
-
-	Context struct {
-		Req    *http.Request
-		Writer http.ResponseWriter
-		index  int
-		chain  *Chain
 	}
 
 	Chain struct {
@@ -46,40 +16,8 @@ type (
 	}
 )
 
-func (c *Context) Next() {
-	c.index++
-	middlewares := c.chain.middlewares
-
-	s := len(middlewares)
-	for ; c.index < s; c.index++ {
-
-		if c.chain.middlewareMatchers[c.index](c.Writer, c.Req) {
-			middlewares[c.index](c)
-		}
-	}
-
-	if c.index == s {
-		c.chain.HttpHandler.ServeHTTP(c.Writer, c.Req)
-	}
-
-}
-func (c *Context) Abort(code int) {
-	c.Writer.WriteHeader(code)
-	c.index = AbortIndex
-}
-
-func (c *Context) Fail(code int, err error) {
-	c.Abort(code)
-	_, _ = c.Writer.Write([]byte(err.Error()))
-}
-
 func NewChain(httpHandle http.Handler, handlers ...MiddlewareFunc) *Chain {
-	var h *HttpHandler
-	if httpHandle == nil {
-		h = &HttpHandler{defaultHttpHandler}
-	} else {
-		h = &HttpHandler{httpHandle}
-	}
+	var h = &HttpHandler{httpHandle}
 	chain := newChain(h, nil, nil)
 	return chain.Use(handlers...)
 }
@@ -98,7 +36,7 @@ func (chain *Chain) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 func (chain *Chain) createContext(w http.ResponseWriter, req *http.Request) *Context {
 	return &Context{
-		Writer: w,
+		Writer: NewResponseWriter(w),
 		Req:    req,
 		index:  -1,
 		chain:  chain,
