@@ -1,18 +1,121 @@
-# gateway 是使用`golang`语言开发的网关服务
+# Knife
+
+Knife Is The Lightweight Middleware For Golang
+
+- Low memory usage
+- Developed in Go 
+- Embrace the cloud native era!
 
 
-微服务网关是一个负责接受和处理外部请求并将其转发到后端微服务的中间层服务。其主要功能点可以概括如下：
+# Getting Started
 
-- 路由：微服务网关可以根据请求的URI、HTTP方法、请求参数等信息，将请求路由到特定的微服务上。通过微服务网关提供的路由功能，可以实现请求的负载均衡和流量控制等功能。
+Gate is designed with developers in mind.
 
-- 服务发现：微服务网关可以从注册中心或者其他服务发现机制中获取可用的微服务列表，并根据负载均衡策略，将请求转发到合适的微服务上。服务发现功能可以提高系统的可用性和可伸缩性。
+All you need to get started is a working Go environment. 
+You can find the Go installation instructions [here](https://go.dev/doc/install).
 
-- 认证和授权：微服务网关可以实现对外部请求的认证和授权处理，防止未授权的请求访问后端微服务，保障服务的安全性。通常，微服务网关会通过JWT等方式对请求进行认证和授权。
+Once you have Go installed, you create a new Go module and add Knife as a dependency:
+```shell
+mkdir knife-demo; 
+cd knife-demo
+go mod init knife-demo
+go get github.com/BadKid90s/knife
+```
 
-- 请求转发：微服务网关可以将多个微服务的请求打包成一个请求进行转发，以减少前端请求的次数，提高系统的性能和并发能力。
+Add and initialize your program and execute it, that's it!
+```go
+package main
 
-- API管理：微服务网关可以对后端微服务的API进行统一的管理和调度，包括API文档生成、API版本管理、API监控和日志记录等功能。API管理可以帮助开发人员更好地理解和使用后端微服务提供的API。
+import (
+	"knife"
+	"knife/middleware"
+	"log"
+	"net/http"
+	"time"
+)
 
-- 缓存：微服务网关可以对请求结果进行缓存，以减少对后端微服务的访问次数，提高系统的性能。在缓存过期或失效后，微服务网关会重新向后端微服务发送请求。
+func main() {
+	//Create http handler
+	mux := http.NewServeMux()
+	mux.HandleFunc("/a", func(writer http.ResponseWriter, request *http.Request) {
+		_, _ = writer.Write([]byte("hello 8080 a "))
+	})
 
-综上所述，微服务网关是一个非常重要的组件，它可以大大简化微服务架构的复杂度，并提高系统的可用性、性能和安全性
+	//Create a middleware chain
+	//first plan
+	chain := planOne(mux)
+
+	//second plan
+	//chain := planTwo(mux)
+
+	//the third plan
+	//chain := planThree(mux)
+
+	//start serve
+	_ = http.ListenAndServe(":8080", chain)
+}
+
+// plan one
+func planOne(h http.Handler) *knife.Chain {
+	//create  middleware chain
+	chain := knife.NewChain(h)
+	//add logger middleware
+	chain.Use(middleware.Logger())
+	//add recover middleware
+	chain.Use(middleware.Recover())
+
+	//add custom implemented middleware
+	chain.Use(func(context *knife.Context) {
+		start := time.Now()
+		defer func() {
+			duration := time.Now().Sub(start)
+			log.Printf("process all middleware,time consumption %s ", duration)
+		}()
+		context.Next()
+	})
+	return chain
+}
+
+// plan two
+// add middleware to the constructor
+func planTwo(h http.Handler) *knife.Chain {
+	//create a middleware chain and add logging and error handling middleware
+	chain := knife.NewChain(h, middleware.Logger(), middleware.Recover())
+
+	//add custom implemented middleware
+	chain.Use(func(context *knife.Context) {
+		start := time.Now()
+		defer func() {
+			duration := time.Now().Sub(start)
+			log.Printf("process all middleware,time consumption %s ", duration)
+		}()
+		context.Next()
+	})
+	return chain
+}
+
+// plan three
+// use chain call
+func planThree(h http.Handler) *knife.Chain {
+	//create a middleware chain and use the chain to add logging, error handling, and custom middleware
+	chain := knife.NewChain(h).
+		Use(middleware.Logger()).
+		Use(middleware.Recover()).
+		Use(func(context *knife.Context) {
+			start := time.Now()
+			defer func() {
+				duration := time.Now().Sub(start)
+				log.Printf("process all middleware,time consumption %s ", duration)
+			}()
+			context.Next()
+		})
+
+	return chain
+}
+```
+
+
+# Learning by Example
+
+The best way to learn how to extend Knife is by looking at some examples.
+If you want to see a complete Go project that uses Knife, [check out the Simple example](https://github.com/BadKid90s/knife/tree/main/example).
