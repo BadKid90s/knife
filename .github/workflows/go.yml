@@ -5,24 +5,32 @@ name: Go Build
 
 on:
   push:
-    branches: [ "simplify" ]
-#  pull_request:
-#    branches: [ "main" ]
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.21
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
 
-    - name: Build
-      run: go build -v ./...
+      - name: Example-Module
+        run: |
+          cd ./example 
+          go fmt ./... 
+          go build ./... 
+          go test ./...
 
-    - name: Test
-      run: go test -v ./...
+      - name: Knife-Module
+        run: |
+          cd ./knife
+          go fmt ./... 
+          go build ./... 
+          go test ./...
