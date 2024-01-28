@@ -8,26 +8,22 @@ import (
 const AbortIndex = math.MaxInt
 
 type Context struct {
-	Req    *http.Request
-	Writer HttpResponseWriter
-	index  int
-	chain  *Chain
+	Req         *http.Request
+	Writer      HttpResponseWriter
+	index       int
+	middlewares []*Middleware
 }
 
 func (c *Context) Next() {
 	c.index++
-	middlewares := c.chain.middlewares
+	middlewares := c.middlewares
 
 	s := len(middlewares)
 	for ; c.index < s; c.index++ {
-
-		if c.chain.middlewareMatchers[c.index](c.Writer, c.Req) {
-			middlewares[c.index](c)
+		middleware := c.middlewares[c.index]
+		if middleware.matcher(c.Writer, c.Req) {
+			middleware.handler(c)
 		}
-	}
-
-	if c.index == s && c.chain.HttpHandler.Handler != nil {
-		c.chain.HttpHandler.ServeHTTP(c.Writer, c.Req)
 	}
 
 }
