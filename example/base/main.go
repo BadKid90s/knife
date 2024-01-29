@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"knife"
 	"knife/middleware"
 	"log"
@@ -12,7 +13,7 @@ func main() {
 
 	//Create a middleware chain
 	//first plan
-	chain := planOne()
+	//chain := planOne()
 
 	//second plan
 	//chain := planTwo()
@@ -20,8 +21,14 @@ func main() {
 	//the third plan
 	//chain := planThree()
 
+	//gzip middleware
+	chain := gzip()
+
 	//start serve
-	_ = http.ListenAndServe(":8080", chain)
+	err := http.ListenAndServe(":8080", chain)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // plan one
@@ -79,5 +86,27 @@ func planThree() *knife.Chain {
 			context.Next()
 		})
 
+	return chain
+}
+
+func gzip() *knife.Chain {
+	chain := knife.NewChain().
+		Use(middleware.Logger()).
+		Use(middleware.Recover()).
+		//Use(middleware.GzipDefault()).
+		Use(middleware.Gzip(1024)).
+		Use(func(context *knife.Context) {
+			data := "Gzip是一种压缩文件格式并且也是一个在类 Unix 上的一种文件解压缩的软件，通常指GNU计划的实现，此处的gzip代表GNU zip。" +
+				"也经常用来表示gzip这种文件格式。软件的作者是Jean-loup Gailly和Mark Adler。在1992年10月31日第一次公开发布，版本号0.1，1993年2月，发布了1.0版本。" +
+				"Gzip是一种压缩文件格式并且也是一个在类 Unix 上的一种文件解压缩的软件，通常指GNU计划的实现，此处的gzip代表GNU zip。" +
+				"也经常用来表示gzip这种文件格式。软件的作者是Jean-loup Gailly和Mark Adler。在1992年10月31日第一次公开发布，版本号0.1，1993年2月，发布了1.0版本。" +
+				"Gzip是一种压缩文件格式并且也是一个在类 Unix 上的一种文件解压缩的软件，通常指GNU计划的实现，此处的gzip代表GNU zip。" +
+				"也经常用来表示gzip这种文件格式。软件的作者是Jean-loup Gailly和Mark Adler。在1992年10月31日第一次公开发布，版本号0.1，1993年2月，发布了1.0版本。"
+			_, err := context.Writer.Write([]byte(data))
+			if err != nil {
+				panic(fmt.Sprintf("writer data error %s", err))
+			}
+			context.Writer.WriteHeader(http.StatusOK)
+		})
 	return chain
 }
