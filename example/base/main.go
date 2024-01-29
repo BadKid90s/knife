@@ -22,7 +22,10 @@ func main() {
 	//chain := planThree()
 
 	//gzip middleware
-	chain := gzip()
+	//chain := gzip()
+
+	//cache middleware
+	chain := cache()
 
 	//start serve
 	err := http.ListenAndServe(":8080", chain)
@@ -102,6 +105,22 @@ func gzip() *knife.Chain {
 				"也经常用来表示gzip这种文件格式。软件的作者是Jean-loup Gailly和Mark Adler。在1992年10月31日第一次公开发布，版本号0.1，1993年2月，发布了1.0版本。" +
 				"Gzip是一种压缩文件格式并且也是一个在类 Unix 上的一种文件解压缩的软件，通常指GNU计划的实现，此处的gzip代表GNU zip。" +
 				"也经常用来表示gzip这种文件格式。软件的作者是Jean-loup Gailly和Mark Adler。在1992年10月31日第一次公开发布，版本号0.1，1993年2月，发布了1.0版本。"
+			_, err := context.Writer.Write([]byte(data))
+			if err != nil {
+				panic(fmt.Sprintf("writer data error %s", err))
+			}
+			context.Writer.WriteHeader(http.StatusOK)
+		})
+	return chain
+}
+
+func cache() *knife.Chain {
+	chain := knife.NewChain().
+		Use(middleware.Logger()).
+		Use(middleware.Recover()).
+		Use(middleware.Cache(30, 60)).
+		Use(func(context *knife.Context) {
+			data := "Hello World"
 			_, err := context.Writer.Write([]byte(data))
 			if err != nil {
 				panic(fmt.Sprintf("writer data error %s", err))
