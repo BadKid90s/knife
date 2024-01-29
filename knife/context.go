@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-const AbortIndex = math.MaxInt
+const AbortIndex = math.MaxInt / 2
 
 type Context struct {
 	Req         *http.Request
