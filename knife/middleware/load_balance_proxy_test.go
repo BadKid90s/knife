@@ -28,7 +28,7 @@ func TestLoadBalanceProxyHash(t *testing.T) {
 
 	addr := "127.0.0.1:8080"
 	targetUrl1 := lb.hash(addr)
-	targetUrl2 := lb.hash("addr")
+	targetUrl2 := lb.hash(addr)
 	targetUrl3 := lb.hash(addr)
 	msg := "compute hash value no the same"
 	assert.Equal(t, targetUrl1, targetUrl2, msg)
