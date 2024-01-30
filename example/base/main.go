@@ -25,7 +25,10 @@ func main() {
 	//chain := gzip()
 
 	//cache middleware
-	chain := cache()
+	//chain := cache()
+
+	//cache middleware
+	chain := loadBalance()
 
 	//start serve
 	err := http.ListenAndServe(":8080", chain)
@@ -126,6 +129,36 @@ func cache() *knife.Chain {
 				panic(fmt.Sprintf("writer data error %s", err))
 			}
 			context.Writer.WriteHeader(http.StatusOK)
+		})
+	return chain
+}
+
+func loadBalance() *knife.Chain {
+	nodes := []*middleware.ServiceNode{
+		{
+			Address: "127.0.0.1:8080",
+			Weight:  1,
+		},
+		{
+			Address: "127.0.0.2:8080",
+			Weight:  1,
+		},
+		{
+			Address: "127.0.0.3:8080",
+			Weight:  1,
+		},
+	}
+	chain := knife.NewChain().
+		Use(middleware.Logger()).
+		Use(middleware.Recover()).
+		Use(middleware.LoadBalanceProxy(middleware.LoadBalanceRandom, nodes)).
+		Use(func(context *knife.Context) {
+			data := "Hello World"
+			_, err := context.Writer.Write([]byte(data))
+			if err != nil {
+				panic(fmt.Sprintf("writer data error %s", err))
+			}
+			context.Abort(http.StatusOK)
 		})
 	return chain
 }
