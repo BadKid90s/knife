@@ -29,6 +29,12 @@ func main() {
 		context.Next()
 	})
 
+	//添加带路径匹配器的自定义中间件
+	chain.UseMatcher(matcher.PathPrefix("/hello"), func(context *knife.Context) {
+		log.Println("pathPrefix matcher")
+		context.Next()
+	})
+
 	//启动服务
 	_ = http.ListenAndServe(":8080", chain)
 }
