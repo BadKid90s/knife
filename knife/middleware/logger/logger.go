@@ -1,4 +1,4 @@
-package middleware
+package logger
 
 import (
 	"knife"
