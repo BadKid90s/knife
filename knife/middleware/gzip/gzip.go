@@ -1,4 +1,4 @@
-package middleware
+package gzip
 
 import (
 	"bytes"
@@ -6,8 +6,8 @@ import (
 	"knife"
 )
 
-// GzipDefault 当响应体的大小超过100kb后，进行gzip压缩
-func GzipDefault() knife.MiddlewareFunc {
+// Default 当响应体的大小超过100kb后，进行gzip压缩
+func Default() knife.MiddlewareFunc {
 	return Gzip(100 * 1024)
 }
 

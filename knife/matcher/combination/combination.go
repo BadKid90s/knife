@@ -1,6 +1,6 @@
 // 将匹配器进行组合的匹配器
 
-package matcher
+package combination
 
 import "knife"
 

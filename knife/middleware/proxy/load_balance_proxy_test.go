@@ -1,4 +1,4 @@
-package middleware
+package proxy
 
 import (
 	"github.com/stretchr/testify/assert"
