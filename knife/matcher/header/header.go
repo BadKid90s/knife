@@ -1,43 +1,43 @@
 // 关于请求头的匹配器
 
-package matcher
+package header
 
 import (
 	"knife"
 	"net/http"
 )
 
-func HeaderResponseExists(key string) knife.MiddlewareMatcher {
+func ResponseExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(response.Header(), key, "")
 	}
 }
 
-func HeaderResponseNotExists(key string) knife.MiddlewareMatcher {
+func ResponseNotExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(response.Header(), key, "")
 	}
 }
 
-func HeaderResponseNe(key, value string) knife.MiddlewareMatcher {
+func ResponseNe(key, value string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(response.Header(), key, value)
 	}
 }
 
-func HeaderResponseEq(key, value string) knife.MiddlewareMatcher {
+func ResponseEq(key, value string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(response.Header(), key, value)
 	}
 }
 
-func HeaderRequestExists(key string) knife.MiddlewareMatcher {
+func RequestExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(request.Header, key, "")
 	}
 }
 
-func HeaderRequestNotExists(key string) knife.MiddlewareMatcher {
+func RequestNotExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(request.Header, key, "")
 	}
