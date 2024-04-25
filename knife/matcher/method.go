@@ -1,26 +1,26 @@
 // 关于请求方法的匹配器
 
-package method
+package matcher
 
 import (
 	"knife"
 	"strings"
 )
 
-func Eq(method string) knife.MiddlewareMatcher {
+func MethodEq(method string) knife.MiddlewareMatcher {
 	method = strings.ToUpper(method)
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return request.Method == method
 	}
 }
-func Ne(method string) knife.MiddlewareMatcher {
+func MethodNe(method string) knife.MiddlewareMatcher {
 	method = strings.ToUpper(method)
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return request.Method != method
 	}
 }
 
-func Any(methods ...string) knife.MiddlewareMatcher {
+func MethodAny(methods ...string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		for _, method := range methods {
 			method = strings.ToUpper(method)

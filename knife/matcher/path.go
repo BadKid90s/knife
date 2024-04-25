@@ -1,6 +1,6 @@
 // 关于路径的匹配器
 
-package path
+package matcher
 
 import (
 	"fmt"
@@ -10,15 +10,15 @@ import (
 	"strings"
 )
 
-// Prefix 路径前缀匹配
-func Prefix(prefix string) knife.MiddlewareMatcher {
+// PathPrefix 路径前缀匹配
+func PathPrefix(prefix string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return strings.HasPrefix(request.URL.Path, prefix)
 	}
 }
 
-// Match 路径正则匹配
-func Match(pattern string) knife.MiddlewareMatcher {
+// PathMatch 路径正则匹配
+func PathMatch(pattern string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		matched, err := isPathMatched(request.URL.Path, pattern)
 		if err != nil {
