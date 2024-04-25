@@ -21,19 +21,19 @@ func main() {
 	chain.Use(recover.Recover())
 
 	//添加响应头是否存在匹配器的自定义中间件
-	chain.UseMatcher(header.HeaderResponseExists("token"), func(context *knife.Context) {
+	chain.UseMatcher(header.ResponseExists("token"), func(context *knife.Context) {
 		log.Printf("token middleware,token:%s ", context.Writer.Header().Get("token"))
 		context.Next()
 	})
 
 	//添加带有组合匹配器的自定义中间件
-	chain.UseMatcher(combination.Any(header.HeaderResponseExists("token"), header.HeaderResponseExists("auth")), func(context *knife.Context) {
+	chain.UseMatcher(combination.Any(header.ResponseExists("token"), header.ResponseExists("auth")), func(context *knife.Context) {
 		log.Printf("token middleware,token:%s ", context.Writer.Header().Get("token"))
 		context.Next()
 	})
 
 	//添加带路径匹配器的自定义中间件
-	chain.UseMatcher(path.PathPrefix("/hello"), func(context *knife.Context) {
+	chain.UseMatcher(path.Prefix("/hello"), func(context *knife.Context) {
 		log.Println("pathPrefix matcher")
 		context.Next()
 	})

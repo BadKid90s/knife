@@ -103,7 +103,7 @@ func gzipFun() *knife.Chain {
 	chain := knife.NewChain().
 		Use(logger.Logger()).
 		Use(recover.Recover()).
-		//Use(middleware.GzipDefault()).
+		//Use(gzip.Default()).
 		Use(gzip.Gzip(1024)).
 		Use(func(context *knife.Context) {
 			data := "Gzip是一种压缩文件格式并且也是一个在类 Unix 上的一种文件解压缩的软件，通常指GNU计划的实现，此处的gzip代表GNU zip。" +
