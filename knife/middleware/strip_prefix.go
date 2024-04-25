@@ -1,4 +1,4 @@
-package stripprefix
+package middleware
 
 import (
 	"knife"
@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// StripPrefix 剥离前缀
 func StripPrefix(prefix string) knife.MiddlewareFunc {
 	return func(context *knife.Context) {
 		r := context.Req
