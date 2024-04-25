@@ -1,6 +1,6 @@
 // 关于路径的匹配器
 
-package matcher
+package path
 
 import (
 	"fmt"

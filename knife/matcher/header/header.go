@@ -1,6 +1,6 @@
 // 关于请求头的匹配器
 
-package matcher
+package header
 
 import (
 	"knife"

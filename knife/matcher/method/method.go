@@ -1,6 +1,6 @@
 // 关于请求方法的匹配器
 
-package matcher
+package method
 
 import (
 	"knife"
