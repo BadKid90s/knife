@@ -7,49 +7,49 @@ import (
 	"net/http"
 )
 
-func ResponseExists(key string) knife.MiddlewareMatcher {
+func RespExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(response.Header(), key, "")
 	}
 }
 
-func ResponseNotExists(key string) knife.MiddlewareMatcher {
+func RespNotExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(response.Header(), key, "")
 	}
 }
 
-func ResponseNe(key, value string) knife.MiddlewareMatcher {
+func RespNe(key, value string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(response.Header(), key, value)
 	}
 }
 
-func ResponseEq(key, value string) knife.MiddlewareMatcher {
+func RespEq(key, value string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(response.Header(), key, value)
 	}
 }
 
-func RequestExists(key string) knife.MiddlewareMatcher {
+func ReqExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(request.Header, key, "")
 	}
 }
 
-func RequestNotExists(key string) knife.MiddlewareMatcher {
+func ReqNotExists(key string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(request.Header, key, "")
 	}
 }
 
-func HeaderRequestNe(key, value string) knife.MiddlewareMatcher {
+func ReqNe(key, value string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return !equalHeaderValue(request.Header, key, value)
 	}
 }
 
-func HeaderRequestEq(key, value string) knife.MiddlewareMatcher {
+func ReqEq(key, value string) knife.MiddlewareMatcher {
 	return func(response knife.HttpResponseWriter, request knife.HttpRequest) bool {
 		return equalHeaderValue(request.Header, key, value)
 	}
